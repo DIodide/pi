@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PI · For you</title><link rel="stylesheet" href="styles.css">
+<style>
+  .feed{max-width:820px;display:grid;gap:16px;margin-top:8px}
+  .fitem{display:flex;align-items:center;gap:15px;padding:18px 20px;position:relative;overflow:hidden}
+  .fitem .accent{position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--c)}
+  .fitem .ic{width:46px;height:46px;border-radius:14px;background:var(--cs);color:var(--c);display:grid;place-items:center;font-size:20px;flex:none}
+  .fitem .bd{flex:1;min-width:0}
+  .fitem .bd b{font-family:var(--display);font-size:16px;font-weight:600}
+  .fitem .bd p{font-size:12.5px;color:var(--muted);margin:3px 0 5px}
+  .fitem .bd .src{font:600 11px/1 var(--mono);color:var(--c)}
+  .fitem .acts{display:flex;gap:8px;flex:none}
+  .fitem .acts .p{background:var(--c);color:#fff;border:0;border-radius:var(--pill);padding:9px 15px;font:600 12.5px/1 var(--body);cursor:pointer}
+  .fitem .acts .g{background:transparent;color:var(--ink-2);border:1.5px solid var(--hair);border-radius:var(--pill);padding:9px 14px;font:600 12.5px/1 var(--body);cursor:pointer}
+  @media(max-width:820px){.fitem{flex-wrap:wrap}.fitem .acts{width:100%}}
+</style></head>
+<body><div class="page">
+  <nav class="rail"><div class="brand">π</div>
+    <a class="lens i-pi active"><span class="sq" style="--c:var(--coral)">π</span><span>For you</span></a>
+    <a class="lens i-pc"><span class="sq">PC</span><span>Courses</span></a>
+    <a class="lens i-tj"><span class="sq">TJ</span><span>Junction</span></a>
+    <a class="lens i-tp"><span class="sq">TP</span><span>Path</span></a>
+    <a class="lens i-ts"><span class="sq">TS</span><span>Snatch</span></a>
+    <a class="lens i-tf"><span class="sq">TF</span><span>Forum</span></a>
+    <a class="lens i-tm"><span class="sq">TM</span><span>Menus</span></a><div class="me">G</div></nav>
+  <main class="content">
+    <div class="pagebar rise d1"><div><div class="greet">Good <span class="serif-it">morning</span>, Geraldine</div>
+      <div class="subtle">PI checked your apps — 5 things worth a look · Tue 8:02am</div></div>
+      <span class="spacer"></span><span class="pill" style="color:var(--coral-ink)"><span class="dot" style="background:var(--coral)"></span>PI for you</span></div>
+
+    <div class="feed">
+      <section class="tile fitem i-ts rise d2"><span class="accent"></span><div class="ic">🔔</div>
+        <div class="bd"><b>A seat just opened in MAT 202 · P01</b><p>It's on your watchlist and it fits your schedule.</p><span class="src">from TigerSnatch → TigerJunction</span></div>
+        <div class="acts"><button class="p">Add to Junction</button><button class="g">Keep watching</button></div></section>
+
+      <section class="tile fitem i-tp rise d2"><span class="accent"></span><div class="ic">🎓</div>
+        <div class="bd"><b>You're one course from finishing your QCR</b><p>COS 226 (★ 4.3) fits your plan and has 12 seats open.</p><span class="src">from TigerPath + PrincetonCourses</span></div>
+        <div class="acts"><button class="p">See it</button><button class="g">Add</button></div></section>
+
+      <section class="tile fitem i-tj rise d3"><span class="accent"></span><div class="ic">📅</div>
+        <div class="bd"><b>Course selection opens in 6 days</b><p>Want a draft schedule ready to go the moment it opens?</p><span class="src">from TigerJunction</span></div>
+        <div class="acts"><button class="p">Draft my schedule</button></div></section>
+
+      <section class="tile fitem i-tf rise d3"><span class="accent"></span><div class="ic">🎤</div>
+        <div class="bd"><b>AI &amp; Society talk today, 5pm — free food</b><p>Matches your interests and it's near your last class.</p><span class="src">from The Forum · your listservs</span></div>
+        <div class="acts"><button class="p">Add to calendar</button><button class="g">Dismiss</button></div></section>
+
+      <section class="tile fitem i-tm rise d4"><span class="accent"></span><div class="ic">🍽️</div>
+        <div class="bd"><b>Chicken parm at Whitman tonight</b><p>One of your usual favorites is on the menu.</p><span class="src">from TigerMenus</span></div>
+        <div class="acts"><button class="p">Remind me</button><button class="g">Not interested</button></div></section>
+    </div>
+    <div class="subtle" style="margin-top:20px">PI checks in each morning · <a style="color:var(--coral-ink);font-weight:600">choose what it watches →</a></div>
+  </main>
+</div></body></html>

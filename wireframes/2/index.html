@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PI · Slash2 mockups</title><link rel="stylesheet" href="styles.css">
+<style>
+  .hub{max-width:1040px;margin:0 auto;padding:60px 28px 80px}
+  .hub h1{font-family:var(--display);font-size:clamp(34px,5vw,52px);letter-spacing:-.02em}
+  .hub h1 em{font-style:italic;color:var(--coral)}
+  .hub .sub{color:var(--ink-2);font-size:16px;margin-top:10px;max-width:60ch}
+  .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:34px}
+  @media(max-width:760px){.cards{grid-template-columns:1fr}}
+  .nav-card{display:block;padding:22px 24px;position:relative;overflow:hidden}
+  .nav-card .accent{position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--c)}
+  .nav-card .k{font:600 11px/1 var(--mono);color:var(--c)}
+  .nav-card h3{font-family:var(--display);font-size:21px;margin:9px 0 6px}
+  .nav-card p{font-size:13.5px;color:var(--muted)}
+  .nav-card .go{position:absolute;right:22px;top:22px;color:var(--c);font-weight:800;font-size:18px}
+</style></head>
+<body>
+  <div class="hub">
+    <div class="rise d1">
+      <span class="eyebrow">Slash2 · hi-fi mockups</span>
+      <h1>Princeton <em>Intelligence</em></h1>
+      <p class="sub">A connector chat app for every TigerApp. Rich answers render right in the chat — matching each target app's own style — then link out to the app for deep, fine-grained work.</p>
+    </div>
+    <div class="cards">
+      <a class="tile nav-card i-pi rise d2" href="chat.html" style="--c:var(--coral)"><span class="accent"></span><span class="go">↗</span>
+        <div class="k">THE CORE</div><h3>Chat</h3><p>The full interface — history sidebar, real chat turns, and inline renders (a live TigerJunction schedule, PrincetonCourses cards) that link out.</p></a>
+      <a class="tile nav-card i-tj rise d2" href="dashboard.html" style="--c:var(--turq)"><span class="accent"></span><span class="go">↗</span>
+        <div class="k">HOME</div><h3>Dashboard</h3><p>Your campus at a glance — today's schedule, degree progress, seat alerts, campus life, and recent chats. Every card deep-links to its app.</p></a>
+      <a class="tile nav-card i-pc rise d3" href="apps.html" style="--c:var(--ceru)"><span class="accent"></span><span class="go">↗</span>
+        <div class="k">LENSES</div><h3>Apps</h3><p>The six TigerApp lenses — what each can do, jargon-free, all connected.</p></a>
+      <a class="tile nav-card i-tp rise d3" href="workflows.html" style="--c:var(--purple)"><span class="accent"></span><span class="go">↗</span>
+        <div class="k">MULTI-APP</div><h3>Workflows</h3><p>Talk to several apps at once — scope tiers, app groups, and cross-app asks.</p></a>
+      <a class="tile nav-card i-ts rise d4" href="proactive.html" style="--c:var(--mag)"><span class="accent"></span><span class="go">↗</span>
+        <div class="k">NEW FEATURE</div><h3>For you</h3><p>PI watches your apps and checks in each morning with cross-app nudges.</p></a>
+      <a class="tile nav-card i-tf rise d4" href="landing.html" style="--c:var(--amber)"><span class="accent"></span><span class="go">↗</span>
+        <div class="k">MARKETING</div><h3>Landing</h3><p>The front door — what PI is, the lenses, and the NetID sign-in.</p></a>
+    </div>
+  </div>
+</body></html>

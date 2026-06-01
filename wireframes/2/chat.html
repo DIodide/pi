@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PI · Chat</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .app{display:flex;min-height:100vh}
+
+  /* ---- chat history sidebar (manage previous chats) ---- */
+  .history{width:286px;flex:none;border-right:1px solid var(--hair);background:#fffdf9cc;
+    backdrop-filter:blur(6px);display:flex;flex-direction:column;height:100vh;position:sticky;top:0}
+  .history-top{padding:18px 16px 10px}
+  .wordmark{font:600 17px/1 var(--display);letter-spacing:-.01em;display:flex;align-items:center;gap:8px;margin-bottom:14px}
+  .wordmark small{font:600 10px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .newchat{width:100%;justify-content:center}
+  .search{margin-top:10px;display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:var(--pill);
+    background:#0000000a;color:var(--muted);font-size:13px}
+  .search input{border:0;background:transparent;outline:0;font:inherit;color:var(--ink);width:100%}
+  .convs{flex:1;overflow:auto;padding:6px 10px 16px}
+  .grp{font:600 10.5px/1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);
+    padding:14px 10px 7px;display:flex;align-items:center;gap:6px}
+  .conv{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:12px;cursor:pointer;position:relative;transition:.13s background}
+  .conv:hover{background:#00000007}
+  .conv.active{background:var(--coral-soft)}
+  .conv .dot{box-shadow:0 0 0 3px #fff}
+  .conv .t{flex:1;min-width:0;font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .conv .when{font-size:11px;color:var(--faint);flex:none}
+  .conv .acts{display:none;gap:2px;flex:none}
+  .conv:hover .when{display:none} .conv:hover .acts{display:flex}
+  .iconbtn{width:24px;height:24px;border-radius:8px;border:0;background:transparent;cursor:pointer;color:var(--muted);
+    display:grid;place-items:center;font-size:13px}
+  .iconbtn:hover{background:#0000000f;color:var(--ink)}
+  .history-foot{border-top:1px solid var(--hair);padding:12px 16px;display:flex;align-items:center;gap:10px}
+  .history-foot .me{width:30px;height:30px;border-radius:50%;background:var(--mag);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px}
+
+  /* ---- main chat ---- */
+  .chat{flex:1;display:flex;flex-direction:column;min-width:0;height:100vh}
+  .topbar{display:flex;align-items:center;gap:12px;padding:14px 26px;border-bottom:1px solid var(--hair);background:#faf4eacc;backdrop-filter:blur(6px)}
+  .topbar h2{font-size:17px;font-weight:600}
+  .scope{margin-left:6px;display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:var(--pill);
+    background:var(--coral-soft);color:var(--coral-ink);font:600 12.5px/1 var(--body);cursor:pointer}
+  .scope .dot{background:var(--coral)}
+  .topbar .sp{flex:1}
+  .thread{flex:1;overflow:auto;padding:30px 0 18px}
+  .wrap{max-width:760px;margin:0 auto;padding:0 28px}
+
+  .turn{margin-bottom:30px}
+  .bubble{max-width:78%;margin-left:auto;background:var(--coral);color:#fff;padding:13px 18px;border-radius:20px 20px 6px 20px;
+    box-shadow:var(--sh-sm);font-size:14.5px;line-height:1.5}
+  .agent-head{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+  .agent-head .sq{width:28px;height:28px;font-size:14px}
+  .agent-head b{font-size:13.5px;color:var(--ink-2);font-weight:600}
+  .agent-head .mono{font-size:11px;color:var(--faint);margin-left:2px}
+  .toolrow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:0 0 14px 38px;font-size:12.5px;color:var(--muted)}
+  .toolchip{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:var(--pill);background:#fff;
+    box-shadow:var(--sh-sm);font-weight:600;font-size:11.5px}
+  .say{margin:0 0 16px 38px;font-size:15px;line-height:1.6;color:var(--ink)}
+  .say .serif-it{color:var(--coral-ink)}
+  .stack{margin-left:38px;display:flex;flex-direction:column;gap:14px}
+
+  /* ---- generic render shell (a "card from another app") ---- */
+  .render{border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);background:#fff;border:1px solid var(--hair)}
+  .render-tag{font:500 10.5px/1 var(--mono);color:var(--faint);margin:0 0 7px 38px;display:flex;align-items:center;gap:7px}
+  .render-tag .fx{background:#efe7d8;color:#8a7c66;padding:3px 7px;border-radius:6px;font-weight:600}
+  .render-head{display:flex;align-items:center;gap:10px;padding:13px 16px}
+  .render-head .name{font-weight:700;font-size:13.5px}
+  .render-head .sub{font-size:11.5px;color:var(--muted)}
+  .render-foot{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-top:1px solid #00000010}
+  .render-foot .note{font-size:11.5px;color:var(--muted)}
+
+  /* TigerJunction-styled schedule render (matches the target site: blue accent, Lato, ReCal grid) */
+  .render--tj{font-family:var(--font-tj,'Lato',sans-serif);--tj:#6485fd;--tjink:#2b3a67}
+  .render--tj .render-head{background:linear-gradient(180deg,#eef2ff,#fff);border-bottom:1px solid #e6ebff}
+  .render--tj .render-head .name{color:var(--tjink)}
+  .render--tj .tjlogo{width:26px;height:26px;border-radius:8px;background:var(--tj);color:#fff;display:grid;place-items:center;font-weight:900;font-size:12px}
+  .cal{position:relative;display:grid;grid-template-columns:30px repeat(5,1fr);height:280px;margin:6px 10px 4px}
+  .cal .day{grid-row:1;text-align:center;font:700 10px/1 'Lato';color:#8893b5;padding:6px 0}
+  .cal .gutter{grid-column:1;font:600 9px/1 'Lato';color:#b9c0d6}
+  .cal .grid{grid-column:2/7;grid-row:2;position:relative;border-left:1px solid #eef0f7}
+  .cal .lines{position:absolute;inset:0;background:repeating-linear-gradient(#f1f3f9 0 1px,transparent 1px 40px)}
+  .cal .cols{position:absolute;inset:0;display:grid;grid-template-columns:repeat(5,1fr)}
+  .cal .cols i{border-right:1px solid #f1f3f9}
+  .blk{position:absolute;border-radius:7px;padding:5px 7px;font-family:'Lato';overflow:hidden;border-left:3px solid}
+  .blk b{font-size:10.5px;font-weight:900;display:block} .blk small{font-size:8.5px;opacity:.8}
+  .render--tj .render-foot{border-top:1px solid #e6ebff;background:#fbfcff}
+  .lo-tj{color:#fff;background:var(--tj)} .lo-tj:hover{background:#4d6ff0}
+
+  /* PrincetonCourses-styled course list render (clean academic, blue) */
+  .render--pc{--pc:#0a6cb0}
+  .render--pc .render-head{background:#f4f9fd;border-bottom:1px solid #e3eef7}
+  .render--pc .pclogo{width:26px;height:26px;border-radius:7px;background:var(--pc);color:#fff;display:grid;place-items:center;font-weight:800;font-size:11px}
+  .crow{display:flex;align-items:center;gap:13px;padding:12px 16px;border-bottom:1px solid #f0eee9}
+  .crow:last-child{border-bottom:0}
+  .crow .code{font:800 14px/1 var(--body);color:var(--ink);width:74px;flex:none}
+  .crow .info{flex:1;min-width:0} .crow .info .ti{font-weight:600;font-size:13px}
+  .crow .info .mt{font-size:11px;color:var(--muted);margin-top:2px}
+  .rate{display:inline-flex;align-items:center;gap:4px;font-weight:700;font-size:12.5px;color:#c8862a}
+  .tag{font:600 10px/1 var(--body);padding:4px 8px;border-radius:var(--pill);background:var(--ceru-soft);color:#0a6cb0}
+  .seat{font:600 11px/1 var(--body);color:var(--green)} .seat.full{color:var(--mag)}
+  .lo-pc{color:#fff;background:var(--pc)} .lo-pc:hover{filter:brightness(1.08)}
+
+  /* TigerSnatch-styled seat-watch render (orange, urgent, friendly) */
+  .render--ts{--ts:#ee5a24}
+  .render--ts{display:flex;align-items:center;gap:13px;padding:14px 16px;border-left:4px solid var(--ts);background:linear-gradient(90deg,#fff5f0,#fff)}
+  .render--ts .bell{width:38px;height:38px;border-radius:50%;background:#ffe2d4;color:var(--ts);display:grid;place-items:center;font-size:17px;flex:none}
+  .render--ts .tx{flex:1} .render--ts .tx b{font-size:14px} .render--ts .tx div{font-size:12px;color:var(--muted)}
+  .lo-ts{color:#fff;background:var(--ts)} .lo-ts:hover{filter:brightness(1.06)}
+
+  /* evaluations render (PrincetonCourses) */
+  .quotes{padding:6px 16px 14px} .q{display:flex;gap:10px;padding:9px 0;border-bottom:1px dashed #efeae0;font-size:12.5px;color:var(--ink-2)}
+  .q:last-child{border-bottom:0} .q .qi{color:var(--ceru);font-family:var(--display);font-size:20px;line-height:.7;flex:none}
+
+  .suggest{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0 38px}
+  .schip{padding:8px 13px;border-radius:var(--pill);background:#fff;border:1px solid var(--hair);box-shadow:var(--sh-sm);
+    font:600 12.5px/1 var(--body);color:var(--ink-2);cursor:pointer;transition:.14s}
+  .schip:hover{border-color:var(--coral);color:var(--coral-ink);transform:translateY(-1px)}
+
+  /* composer */
+  .composer-wrap{padding:14px 0 22px;background:linear-gradient(#faf4ea00,#faf4ea 36%)}
+  .composer{max-width:760px;margin:0 auto;padding:0 28px}
+  .cbar{display:flex;align-items:center;gap:10px;background:var(--paper);border:1.5px solid var(--hair);border-radius:var(--r-lg);
+    padding:8px 8px 8px 14px;box-shadow:var(--sh)}
+  .cbar:focus-within{border-color:var(--coral);box-shadow:0 0 0 4px var(--coral-soft),var(--sh)}
+  .cscope{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:var(--pill);background:var(--coral-soft);
+    color:var(--coral-ink);font:600 12px/1 var(--body);cursor:pointer;flex:none}
+  .cbar input{flex:1;border:0;outline:0;background:transparent;font:400 14.5px/1.4 var(--body);color:var(--ink)}
+  .send{width:40px;height:40px;border-radius:50%;background:var(--coral);color:#fff;border:0;cursor:pointer;display:grid;place-items:center;
+    font-size:17px;flex:none;box-shadow:var(--sh-sm);transition:.15s}
+  .send:hover{transform:translateY(-1px) scale(1.03)}
+  .chint{text-align:center;font-size:11px;color:var(--faint);margin-top:9px}
+  .chint b{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- app lens rail -->
+  <nav class="rail">
+    <div class="brand">π</div>
+    <a class="lens i-pi active"><span class="sq" style="--c:var(--coral)">π</span><span>All</span></a>
+    <a class="lens i-pc"><span class="sq">PC</span><span>Courses</span></a>
+    <a class="lens i-tj"><span class="sq">TJ</span><span>Junction</span></a>
+    <a class="lens i-tp"><span class="sq">TP</span><span>Path</span></a>
+    <a class="lens i-ts"><span class="sq">TS</span><span>Snatch</span></a>
+    <a class="lens i-tf"><span class="sq">TF</span><span>Forum</span></a>
+    <a class="lens i-tm"><span class="sq">TM</span><span>Menus</span></a>
+    <div class="me">G</div>
+  </nav>
+
+  <!-- chat history management -->
+  <aside class="history">
+    <div class="history-top">
+      <div class="wordmark">Princeton Intelligence <small>PI</small></div>
+      <button class="btn newchat">＋ New chat</button>
+      <label class="search">🔍<input placeholder="Search your chats"></label>
+    </div>
+    <div class="convs">
+      <div class="grp">📌 Pinned</div>
+      <div class="conv"><span class="dot" style="background:var(--coral)"></span><span class="t">Spring 2026 plan</span><span class="when">Mar 24</span>
+        <span class="acts"><button class="iconbtn" title="Rename">✏️</button><button class="iconbtn" title="More">⋯</button></span></div>
+      <div class="conv"><span class="dot" style="background:var(--purple)"></span><span class="t">Thesis advisor shortlist</span><span class="when">Mar 19</span>
+        <span class="acts"><button class="iconbtn">✏️</button><button class="iconbtn">⋯</button></span></div>
+
+      <div class="grp">Today</div>
+      <div class="conv active"><span class="dot" style="background:var(--coral)"></span><span class="t">Balanced spring schedule</span><span class="when">now</span>
+        <span class="acts"><button class="iconbtn" title="Pin">📌</button><button class="iconbtn">⋯</button></span></div>
+      <div class="conv"><span class="dot" style="background:var(--ceru)"></span><span class="t">COS 226 reviews</span><span class="when">9:14</span>
+        <span class="acts"><button class="iconbtn">📌</button><button class="iconbtn">⋯</button></span></div>
+      <div class="conv"><span class="dot" style="background:var(--amber)"></span><span class="t">Free food tonight?</span><span class="when">8:02</span>
+        <span class="acts"><button class="iconbtn">📌</button><button class="iconbtn">⋯</button></span></div>
+
+      <div class="grp">Yesterday</div>
+      <div class="conv"><span class="dot" style="background:var(--ceru)"></span><span class="t">Compare ORF 309 vs 245</span><span class="when">Mon</span>
+        <span class="acts"><button class="iconbtn">📌</button><button class="iconbtn">⋯</button></span></div>
+      <div class="conv"><span class="dot" style="background:var(--purple)"></span><span class="t">What's left for my degree?</span><span class="when">Mon</span>
+        <span class="acts"><button class="iconbtn">📌</button><button class="iconbtn">⋯</button></span></div>
+
+      <div class="grp">Previous 7 days</div>
+      <div class="conv"><span class="dot" style="background:var(--mag)"></span><span class="t">Watch ECO 100 for me</span><span class="when">Fri</span>
+        <span class="acts"><button class="iconbtn">📌</button><button class="iconbtn">⋯</button></span></div>
+      <div class="conv"><span class="dot" style="background:var(--green)"></span><span class="t">Whitman dinner — vegan?</span><span class="when">Thu</span>
+        <span class="acts"><button class="iconbtn">📌</button><button class="iconbtn">⋯</button></span></div>
+      <div class="conv"><span class="dot" style="background:var(--amber)"></span><span class="t">Dean's date deadlines</span><span class="when">Wed</span>
+        <span class="acts"><button class="iconbtn">📌</button><button class="iconbtn">⋯</button></span></div>
+    </div>
+    <div class="history-foot"><div class="me">G</div><div><div style="font-weight:600;font-size:13px">Geraldine W.</div><div style="font-size:11px;color:var(--muted)">geraldine@princeton.edu</div></div></div>
+  </aside>
+
+  <!-- conversation -->
+  <main class="chat">
+    <header class="topbar">
+      <h2 class="display">Balanced spring schedule</h2>
+      <button class="scope"><span class="dot"></span>Everything ⌄</button>
+      <span class="sp"></span>
+      <button class="iconbtn" title="Share">⤴</button>
+      <button class="iconbtn" title="More">⋯</button>
+    </header>
+
+    <div class="thread">
+      <div class="wrap">
+
+        <!-- Turn 1: user -->
+        <div class="turn rise d1">
+          <div class="bubble">Build me a balanced spring schedule — finish my QCR, good profs, MWF mornings, and watch anything that's full.</div>
+        </div>
+
+        <!-- Turn 1: assistant -->
+        <div class="turn rise d2">
+          <div class="agent-head"><span class="sq i-pi" style="--c:var(--coral)">π</span><b>PI</b><span class="mono">· Everything</span></div>
+          <div class="toolrow">Worked across
+            <span class="toolchip"><span class="dot" style="background:var(--purple)"></span>TigerPath</span>
+            <span class="toolchip"><span class="dot" style="background:var(--ceru)"></span>PrincetonCourses</span>
+            <span class="toolchip"><span class="dot" style="background:var(--turq)"></span>TigerJunction</span>
+            <span class="toolchip"><span class="dot" style="background:var(--mag)"></span>TigerSnatch</span>
+          </div>
+          <p class="say">Here's a schedule that finishes your <b>QCR</b> with well-rated MWF-morning classes — I put it straight onto <span class="serif-it">TigerJunction</span> and I'm watching the one that's full.</p>
+
+          <div class="stack">
+            <!-- TigerJunction-styled schedule render -->
+            <div>
+              <div class="render-tag"><span class="fx">live view</span> replaced <span class="mono">get_schedule()</span> — rendered in TigerJunction's style</div>
+              <div class="render render--tj">
+                <div class="render-head"><div class="tjlogo">TJ</div><div><div class="name">Spring 2026 · Draft</div><div class="sub">4 courses · no conflicts · Fridays free</div></div></div>
+                <div class="cal">
+                  <div class="gutter" style="grid-row:2">9<br><br><br>10<br><br><br>11<br><br><br>12<br><br><br>1</div>
+                  <div class="day" style="grid-column:2">M</div><div class="day" style="grid-column:3">T</div>
+                  <div class="day" style="grid-column:4">W</div><div class="day" style="grid-column:5">Th</div><div class="day" style="grid-column:6">F</div>
+                  <div class="grid">
+                    <div class="lines"></div><div class="cols"><i></i><i></i><i></i><i></i><i></i></div>
+                    <!-- ECO 100 MWF 9 -->
+                    <div class="blk" style="left:0%;width:20%;top:0;height:38px;background:#dff0ff;border-color:#3b82f6;color:#1e3a8a">ECO 100<small>McCosh 50</small></div>
+                    <div class="blk" style="left:40%;width:20%;top:0;height:38px;background:#dff0ff;border-color:#3b82f6;color:#1e3a8a">ECO 100<small>McCosh 50</small></div>
+                    <div class="blk" style="left:80%;width:20%;top:0;height:38px;background:#dff0ff;border-color:#3b82f6;color:#1e3a8a">ECO 100<small>McCosh 50</small></div>
+                    <!-- COS 226 MWF 10 -->
+                    <div class="blk" style="left:0%;width:20%;top:40px;height:38px;background:#e8fbf2;border-color:#10b981;color:#065f46">COS 226<small>Friend 101</small></div>
+                    <div class="blk" style="left:40%;width:20%;top:40px;height:38px;background:#e8fbf2;border-color:#10b981;color:#065f46">COS 226<small>Friend 101</small></div>
+                    <div class="blk" style="left:80%;width:20%;top:40px;height:38px;background:#e8fbf2;border-color:#10b981;color:#065f46">COS 226<small>Friend 101</small></div>
+                    <!-- WWS 301 TTh 11-12:20 -->
+                    <div class="blk" style="left:20%;width:20%;top:80px;height:58px;background:#f1e9ff;border-color:#8b5cf6;color:#5b21b6">WWS 301<small>Robertson</small></div>
+                    <div class="blk" style="left:60%;width:20%;top:80px;height:58px;background:#f1e9ff;border-color:#8b5cf6;color:#5b21b6">WWS 301<small>Robertson</small></div>
+                    <!-- GSS 350 Th 1 -->
+                    <div class="blk" style="left:60%;width:20%;top:160px;height:46px;background:#ffe9f4;border-color:#ec4899;color:#9d174d">GSS 350<small>Aaron 008</small></div>
+                  </div>
+                </div>
+                <div class="render-foot"><span class="note">Editing, exports & conflict checks live in the app</span><a class="linkout lo-tj">Open in TigerJunction</a></div>
+              </div>
+            </div>
+
+            <!-- PrincetonCourses-styled course list render -->
+            <div>
+              <div class="render-tag"><span class="fx">live view</span> replaced <span class="mono">search_courses()</span> + <span class="mono">get_evaluations()</span></div>
+              <div class="render render--pc">
+                <div class="render-head"><div class="pclogo">PU</div><div><div class="name">Why these three</div><div class="sub">ratings & seats · PrincetonCourses</div></div></div>
+                <div class="crow"><div class="code">COS 226</div><div class="info"><div class="ti">Algorithms & Data Structures</div><div class="mt">MWF 10:00 · Dondero · QCR</div></div><span class="rate">★ 4.3</span><span class="tag">QCR ✓ Path</span><span class="seat">12 open</span></div>
+                <div class="crow"><div class="code">ECO 100</div><div class="info"><div class="ti">Intro to Microeconomics</div><div class="mt">MWF 9:00 · Kasparov · SA</div></div><span class="rate">★ 4.1</span><span class="tag">fits Junction</span><span class="seat">5 open</span></div>
+                <div class="crow"><div class="code">MAT 202</div><div class="info"><div class="ti">Linear Algebra</div><div class="mt">MWF 11:00 · Ionescu · QCR</div></div><span class="rate">★ 4.2</span><span class="tag">QCR ✓ Path</span><span class="seat full">full</span></div>
+                <div class="render-foot"><span class="note">Full evaluations, grading & past terms in the app</span><a class="linkout lo-pc">View on PrincetonCourses</a></div>
+              </div>
+            </div>
+
+            <!-- TigerSnatch-styled seat watch render -->
+            <div>
+              <div class="render-tag"><span class="fx">action</span> called <span class="mono">subscribe_to_snatch()</span></div>
+              <div class="render render--ts">
+                <div class="bell">🔔</div>
+                <div class="tx"><b>Watching MAT 202 · P01</b><div>You're #28 in line — I'll email geraldine@princeton.edu the moment a seat opens.</div></div>
+                <a class="linkout lo-ts">Manage on TigerSnatch</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="suggest">
+            <button class="schip">Swap MAT 202 for a seminar</button>
+            <button class="schip">What am I still missing for COS?</button>
+            <button class="schip">Add these to my calendar</button>
+          </div>
+        </div>
+
+        <!-- Turn 2: user -->
+        <div class="turn rise d3">
+          <div class="bubble">what did people actually say about COS 226?</div>
+        </div>
+
+        <!-- Turn 2: assistant -->
+        <div class="turn rise d4">
+          <div class="agent-head"><span class="sq i-pi" style="--c:var(--coral)">π</span><b>PI</b><span class="mono">· asked PrincetonCourses</span></div>
+          <p class="say">Strong reviews — students love the <span class="serif-it">psets and Dondero's lectures</span>, but call it time-intensive. Averaged <b>4.3/5</b> across the last 4 terms.</p>
+          <div class="stack">
+            <div class="render render--pc">
+              <div class="render-head"><div class="pclogo">PU</div><div><div class="name">COS 226 · student evaluations</div><div class="sub">★ 4.3 · 312 ratings · recency-weighted</div></div></div>
+              <div class="quotes">
+                <div class="q"><span class="qi">"</span>The assignments are genuinely the best part — hard but you learn an unreal amount.</div>
+                <div class="q"><span class="qi">"</span>Dondero is a phenomenal lecturer. Come to class, it's worth it.</div>
+                <div class="q"><span class="qi">"</span>Budget your time. The deadlines come fast during midterms season.</div>
+              </div>
+              <div class="render-foot"><span class="note">All 312 reviews + per-term ratings in the app</span><a class="linkout lo-pc">Read all reviews on PrincetonCourses</a></div>
+            </div>
+          </div>
+          <div class="suggest">
+            <button class="schip">Who else teaches it?</button>
+            <button class="schip">Compare with COS 217</button>
+            <button class="schip">Add COS 226 to my plan</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- composer -->
+    <div class="composer-wrap">
+      <div class="composer">
+        <div class="cbar">
+          <button class="cscope"><span class="dot" style="background:var(--coral);width:8px;height:8px;border-radius:50%"></span>Everything ⌄</button>
+          <input placeholder="Ask across your apps, or pick a lens to focus…">
+          <button class="iconbtn" title="Attach">＋</button>
+          <button class="send">↑</button>
+        </div>
+        <div class="chint"><b>PI connects your TigerApps</b> — rich answers here, deep edits in each app. Replies may be imperfect.</div>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

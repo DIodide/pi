@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PI · Apps</title><link rel="stylesheet" href="styles.css">
+<style>
+  .banner{display:flex;align-items:center;gap:16px;background:var(--coral-soft);border-radius:var(--r-lg);padding:18px 22px;margin-bottom:22px}
+  .banner .sq{width:50px;height:50px;font-size:22px}
+  .banner h3{font-family:var(--display);font-size:19px}.banner p{font-size:13px;color:var(--ink-2);margin-top:2px}
+  .appgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media(max-width:1080px){.appgrid{grid-template-columns:repeat(2,1fr)}}
+  .appcard{position:relative;overflow:hidden;padding-top:26px}
+  .appcard .top{position:absolute;left:0;right:0;top:0;height:6px;background:var(--c)}
+  .appcard .hd{display:flex;align-items:center;gap:12px}.appcard .hd .sq{width:46px;height:46px;font-size:17px}
+  .appcard .hd b{font-family:var(--display);font-size:18px;display:block}.appcard .hd small{font-size:12px;color:var(--muted)}
+  .caps{margin:15px 0 4px;display:grid;gap:9px}
+  .caps li{list-style:none;display:flex;align-items:center;gap:9px;font-size:12.5px}
+  .caps li::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c)}
+  .soonrow{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+  .soon{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#f6f0e6;border:1px solid var(--hair);border-radius:var(--r)}
+  .soon .sq{width:36px;height:36px;background:#d8cdbb;font-size:13px}.soon b{font-size:13.5px;color:var(--muted)}.soon small{font-size:11px;color:var(--muted);display:block}
+</style></head>
+<body><div class="page">
+  <nav class="rail"><div class="brand">π</div>
+    <a class="lens i-pi"><span class="sq" style="--c:var(--coral)">π</span><span>Home</span></a>
+    <a class="lens i-pc"><span class="sq">PC</span><span>Courses</span></a>
+    <a class="lens i-tj"><span class="sq">TJ</span><span>Junction</span></a>
+    <a class="lens i-tp"><span class="sq">TP</span><span>Path</span></a>
+    <a class="lens i-ts"><span class="sq">TS</span><span>Snatch</span></a>
+    <a class="lens i-tf"><span class="sq">TF</span><span>Forum</span></a>
+    <a class="lens i-tm"><span class="sq">TM</span><span>Menus</span></a>
+    <div class="me">G</div></nav>
+  <main class="content">
+    <div class="pagebar rise d1"><div><div class="greet">Your <span class="serif-it">Princeton</span> apps</div>
+      <div class="subtle">Chat with one, a few, or all at once — no setup, no jargon. Just toggle what PI can see.</div></div>
+      <span class="spacer"></span><div class="me-lg">G</div></div>
+
+    <div class="banner rise d2"><span class="sq" style="--c:var(--coral)">π</span>
+      <div style="flex:1"><h3>Everything mode</h3><p>PI automatically uses any TigerApp it needs in one conversation — on by default.</p></div>
+      <span class="pill" style="color:var(--coral-ink)"><span class="dot" style="background:var(--coral)"></span>On by default</span></div>
+
+    <div class="appgrid">
+      <section class="tile appcard i-pc rise d2"><span class="top"></span>
+        <div class="hd"><span class="sq">PC</span><div><b>PrincetonCourses</b><small>courses &amp; evaluations</small></div></div>
+        <ul class="caps"><li>Search &amp; compare courses</li><li>Read evaluations &amp; ratings</li><li>Look up instructors &amp; top-rated</li></ul>
+        <div class="linkrow"><span class="pill" style="color:var(--green)"><span class="dot" style="background:var(--green)"></span>Connected</span><a class="linkout lo-pc">Open</a></div></section>
+
+      <section class="tile appcard i-tj rise d3"><span class="top"></span>
+        <div class="hd"><span class="sq">TJ</span><div><b>TigerJunction</b><small>build your schedule</small></div></div>
+        <ul class="caps"><li>Build &amp; edit your schedule</li><li>Check for time conflicts</li><li>Find courses that fit</li></ul>
+        <div class="linkrow"><span class="pill" style="color:var(--green)"><span class="dot" style="background:var(--green)"></span>Connected</span><a class="linkout lo-tj">Open</a></div></section>
+
+      <section class="tile appcard i-tp rise d3"><span class="top"></span>
+        <div class="hd"><span class="sq">TP</span><div><b>TigerPath</b><small>4-year plan &amp; requirements</small></div></div>
+        <ul class="caps"><li>Track requirements left</li><li>Your four-year plan</li><li>When students take a course</li></ul>
+        <div class="linkrow"><span class="pill" style="color:var(--green)"><span class="dot" style="background:var(--green)"></span>Connected</span><a class="linkout lo-tp">Open</a></div></section>
+
+      <section class="tile appcard i-ts rise d4"><span class="top"></span>
+        <div class="hd"><span class="sq">TS</span><div><b>TigerSnatch</b><small>a seat when one opens</small></div></div>
+        <ul class="caps"><li>Get a seat when one opens</li><li>See how competitive a class is</li><li>Trending hard-to-get courses</li></ul>
+        <div class="linkrow"><span class="pill" style="color:var(--green)"><span class="dot" style="background:var(--green)"></span>Connected</span><a class="linkout lo-ts">Open</a></div></section>
+
+      <section class="tile appcard i-tf rise d4"><span class="top"></span>
+        <div class="hd"><span class="sq">TF</span><div><b>The Forum</b><small>events · listservs · free food</small></div></div>
+        <ul class="caps"><li>What's happening this week</li><li>Free food right now</li><li>Summarize your listservs</li></ul>
+        <div class="linkrow"><span class="pill" style="color:var(--green)"><span class="dot" style="background:var(--green)"></span>Connected</span><a class="linkout lo-tf">Open</a></div></section>
+
+      <section class="tile appcard i-tm rise d5"><span class="top"></span>
+        <div class="hd"><span class="sq">TM</span><div><b>TigerMenus</b><small>dining hall menus</small></div></div>
+        <ul class="caps"><li>Today's dining hall menus</li><li>Find dishes &amp; dietary options</li><li>What's for dinner tonight</li></ul>
+        <div class="linkrow"><span class="pill" style="color:var(--green)"><span class="dot" style="background:var(--green)"></span>Connected</span><a class="linkout lo-tm">Open</a></div></section>
+    </div>
+
+    <div class="soonrow rise d6">
+      <div class="soon"><span class="sq">M</span><div><b>MyPrincetonU</b><small>registrar read/write</small></div><span class="pill hpill" style="color:var(--muted)">Soon</span></div>
+      <div class="soon"><span class="sq">D</span><div><b>TigerDraw</b><small>room draw planning</small></div><span class="pill hpill" style="color:var(--muted)">Soon</span></div>
+      <div class="soon"><span class="sq">+</span><div><b>Add your app</b><small>any TigerApp MCP</small></div><span class="pill hpill" style="color:var(--muted)">SDK</span></div>
+    </div>
+  </main>
+</div></body></html>

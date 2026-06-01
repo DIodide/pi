@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PI · Workflows</title><link rel="stylesheet" href="styles.css">
+<style>
+  .tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:30px}
+  .tier{display:flex;align-items:center;gap:13px;padding:15px 18px;background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);box-shadow:var(--sh-sm);position:relative}
+  .tier .accent{position:absolute;left:0;top:10px;bottom:10px;width:4px;border-radius:99px;background:var(--c)}
+  .tier b{font-family:var(--display);font-size:16px}.tier small{font-size:11.5px;color:var(--muted);display:block}
+  .sech{font-family:var(--display);font-size:19px;font-weight:600;margin:6px 0 14px}
+  .groupgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:30px}
+  @media(max-width:1080px){.groupgrid,.tiers{grid-template-columns:1fr}.askgrid{grid-template-columns:1fr!important}}
+  .gcard{position:relative;overflow:hidden}.gcard .top{position:absolute;left:0;right:0;top:0;height:6px;background:var(--c)}
+  .members{display:flex;margin:6px 0 12px}.members .sq{width:34px;height:34px;font-size:12px;border:2.5px solid var(--paper);margin-right:-9px}
+  .gcard b{font-family:var(--display);font-size:17px}.gcard p{font-size:12.5px;color:var(--muted);margin:3px 0 9px}
+  .gcard .mem{font:600 11px/1 var(--mono);color:var(--c)}
+  .gbtn{margin-top:14px;width:100%;justify-content:center;background:var(--c);color:#fff;border:0;border-radius:var(--pill);padding:11px;font:600 13px/1 var(--body);cursor:pointer}
+  .askgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .askcard{padding:18px;cursor:pointer}.askcard .tag{font:700 10px/1 var(--body);letter-spacing:.1em;color:var(--muted)}
+  .askcard .q{font-family:var(--display);font-size:15px;font-weight:500;margin:11px 0 16px;line-height:1.25}
+  .dots{display:flex;align-items:center;gap:14px}.dots .d{display:flex;align-items:center;gap:5px;font:600 10.5px/1 var(--body);color:var(--muted)}
+  .askcard .go{float:right;color:var(--coral);font-weight:700}
+</style></head>
+<body><div class="page">
+  <nav class="rail"><div class="brand">π</div>
+    <a class="lens i-pi"><span class="sq" style="--c:var(--coral)">π</span><span>Home</span></a>
+    <a class="lens i-pc"><span class="sq">PC</span><span>Courses</span></a>
+    <a class="lens i-tj"><span class="sq">TJ</span><span>Junction</span></a>
+    <a class="lens i-tp"><span class="sq">TP</span><span>Path</span></a>
+    <a class="lens i-ts"><span class="sq">TS</span><span>Snatch</span></a>
+    <a class="lens i-tf"><span class="sq">TF</span><span>Forum</span></a>
+    <a class="lens i-tm"><span class="sq">TM</span><span>Menus</span></a><div class="me">G</div></nav>
+  <main class="content">
+    <div class="pagebar rise d1"><div><div class="greet">Do more <span class="serif-it">across</span> your apps</div>
+      <div class="subtle">Ask one thing — PI uses as many TigerApps as it takes.</div></div></div>
+
+    <div class="tiers rise d2">
+      <div class="tier i-pc"><span class="accent"></span><div><b>One app</b><small>focus a single lens — its data docks beside the chat</small></div></div>
+      <div class="tier i-tp"><span class="accent"></span><div><b>A group</b><small>several related apps at once</small></div></div>
+      <div class="tier i-pi" style="--c:var(--coral)"><span class="accent"></span><div><b>Everything</b><small>every app, automatically (default)</small></div></div>
+    </div>
+
+    <div class="sech rise d2">App groups — talk to a few at once</div>
+    <div class="groupgrid">
+      <section class="tile gcard i-tj rise d3"><span class="top"></span>
+        <div class="members"><span class="sq i-pc">PC</span><span class="sq i-tj">TJ</span><span class="sq i-tp">TP</span><span class="sq i-ts">TS</span></div>
+        <b>Course Planning</b><p>Assemble next semester, end to end.</p>
+        <div class="mem">Courses · Junction · TigerPath · Snatch</div>
+        <button class="gbtn">Chat with this group →</button></section>
+      <section class="tile gcard i-tf rise d3"><span class="top"></span>
+        <div class="members"><span class="sq i-tf">TF</span><span class="sq i-tm">TM</span></div>
+        <b>Campus Life</b><p>Food, events &amp; what's happening.</p>
+        <div class="mem">The Forum · TigerMenus</div>
+        <button class="gbtn">Chat with this group →</button></section>
+      <section class="tile gcard i-tp rise d4"><span class="top"></span>
+        <div class="members"><span class="sq i-tp">TP</span><span class="sq i-tj">TJ</span><span class="sq i-ts">TS</span></div>
+        <b>Stay on Track</b><p>Keep your degree plan moving.</p>
+        <div class="mem">TigerPath · Junction · Snatch</div>
+        <button class="gbtn">Chat with this group →</button></section>
+    </div>
+
+    <div class="sech rise d4">Try asking across apps</div>
+    <div class="askgrid">
+      <section class="tile askcard rise d4"><div class="tag">COURSE SELECTION</div><div class="q">"Build a balanced spring schedule and watch the full ones for me"</div>
+        <div class="dots"><span class="d"><span class="dot" style="background:var(--ceru)"></span>Courses</span><span class="d"><span class="dot" style="background:var(--turq)"></span>Junction</span><span class="d"><span class="dot" style="background:var(--purple)"></span>Path</span><span class="d"><span class="dot" style="background:var(--mag)"></span>Snatch</span></div></section>
+      <section class="tile askcard rise d5"><div class="tag">COURSE SELECTION</div><div class="q">"3 backups that still fit if I don't get into MAT 202"</div>
+        <div class="dots"><span class="d"><span class="dot" style="background:var(--ceru)"></span>Courses</span><span class="d"><span class="dot" style="background:var(--turq)"></span>Junction</span><span class="d"><span class="dot" style="background:var(--mag)"></span>Snatch</span></div></section>
+      <section class="tile askcard rise d5"><div class="tag">LOOKING AHEAD</div><div class="q">"What should I take to finish my certificate and explore ML?"</div>
+        <div class="dots"><span class="d"><span class="dot" style="background:var(--purple)"></span>Path</span><span class="d"><span class="dot" style="background:var(--ceru)"></span>Courses</span><span class="d"><span class="dot" style="background:var(--turq)"></span>Junction</span></div></section>
+      <section class="tile askcard rise d5"><div class="tag">EVERYDAY</div><div class="q">"Catch me up on campus and what's for lunch today"</div>
+        <div class="dots"><span class="d"><span class="dot" style="background:var(--amber)"></span>Forum</span><span class="d"><span class="dot" style="background:var(--green)"></span>Menus</span></div></section>
+      <section class="tile askcard rise d6"><div class="tag">EVERYDAY</div><div class="q">"Add the free study break from my listserv to my calendar"</div>
+        <div class="dots"><span class="d"><span class="dot" style="background:var(--amber)"></span>Forum</span></div></section>
+      <section class="tile askcard rise d6"><div class="tag">DECIDE</div><div class="q">"Compare COS 226 and COS 217 side by side, with demand"</div>
+        <div class="dots"><span class="d"><span class="dot" style="background:var(--ceru)"></span>Courses</span><span class="d"><span class="dot" style="background:var(--mag)"></span>Snatch</span></div></section>
+    </div>
+  </main>
+</div></body></html>

@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Princeton Intelligence</title><link rel="stylesheet" href="styles.css">
+<style>
+  body{overflow-x:hidden}
+  .nav{display:flex;align-items:center;gap:14px;padding:22px 7vw;position:relative;z-index:3}
+  .nav .logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:18px}
+  .nav .logo .sq{width:36px;height:36px}
+  .nav a{font-size:13.5px;color:var(--ink-2);font-weight:600}.nav .links{display:flex;gap:26px;margin-left:30px}
+  .sec{position:relative;overflow:hidden;padding:0 7vw}
+  .hero{padding:40px 7vw 90px;background:linear-gradient(180deg,#fff1ea,#fdeee6)}
+  .hero .blob1{position:absolute;width:620px;height:560px;border-radius:50%;background:#ff8f6e55;filter:blur(10px);right:-160px;top:-160px}
+  .hero .blob2{position:absolute;width:360px;height:360px;border-radius:50%;background:#fee88277;right:120px;top:120px}
+  .hero .blob3{position:absolute;width:420px;height:380px;border-radius:50%;background:#ffd3ea66;left:-150px;bottom:-80px}
+  .hero .row{display:grid;grid-template-columns:1.05fr .95fr;gap:40px;align-items:center;position:relative;z-index:2}
+  @media(max-width:900px){.hero .row{grid-template-columns:1fr}}
+  .eyebrow2{display:inline-flex;align-items:center;gap:7px;background:#fff;box-shadow:var(--sh-sm);padding:7px 14px;border-radius:99px;font:600 12px/1 var(--body);color:var(--coral-ink)}
+  h1.big{font-family:var(--display);font-weight:600;font-size:clamp(40px,5.6vw,72px);line-height:1.02;letter-spacing:-.02em;margin:22px 0 18px}
+  h1.big em{font-style:italic;font-weight:500;color:var(--coral)}
+  .lede{font-size:17px;color:var(--ink-2);max-width:30ch;line-height:1.55}
+  .cta{display:flex;gap:14px;margin-top:26px;flex-wrap:wrap}
+  .trust{margin-top:20px;font-size:12.5px;color:var(--muted)}
+  /* floating chat mock */
+  .mock{background:var(--paper);border-radius:24px;box-shadow:var(--sh-lg);overflow:hidden;border:1px solid #fff}
+  .mock .bar{background:var(--coral-soft);padding:13px 16px;display:flex;align-items:center;gap:10px;font:600 13px/1 var(--body)}
+  .mock .bar .sq{width:26px;height:26px;font-size:13px}
+  .mock .body{padding:16px}
+  .ub{background:var(--coral);color:#fff;padding:10px 14px;border-radius:14px 14px 4px 14px;font-size:13px;max-width:80%;margin-left:auto}
+  .status{font:600 11px/1 var(--mono);color:var(--coral-ink);margin:13px 2px 11px}
+  .mrow{display:flex;align-items:center;gap:11px;padding:10px 12px;border:1px solid var(--hair);border-radius:13px;margin-top:8px}
+  .mrow .b{width:4px;align-self:stretch;border-radius:99px;background:var(--c)}
+  .mrow b{font-size:13px}.mrow small{font-size:10.5px;color:var(--muted);display:block}.mrow .add{margin-left:auto;background:var(--turq);color:#fff;border:0;border-radius:99px;padding:7px 13px;font:600 11px/1 var(--body)}
+  /* section 2 */
+  .s2{background:linear-gradient(180deg,#e9fafb,#eafbf5);padding:80px 7vw}
+  .s2 .blobA{position:absolute;width:460px;height:420px;border-radius:50%;background:#a2eff077;left:-120px;top:40px}
+  .lenses{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px;position:relative;z-index:2}
+  @media(max-width:820px){.lenses{grid-template-columns:1fr}}
+  .lcard{background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);padding:18px;box-shadow:var(--sh-sm);transition:.18s transform,.18s box-shadow}
+  .lcard:hover{transform:translateY(-3px);box-shadow:var(--sh)}
+  .lcard .hd{display:flex;align-items:center;gap:11px}.lcard .sq{width:42px;height:42px;font-size:15px}
+  .lcard b{font-family:var(--display);font-size:16px;display:block}.lcard small{font-size:12px;color:var(--muted)}
+  .lcard .ex{margin-top:13px;background:var(--cs);color:var(--c);border-radius:11px;padding:9px 12px;font-size:12.5px;font-weight:600}
+  /* section 3 */
+  .s3{background:var(--coral);color:#fff;padding:88px 7vw;text-align:left;position:relative}
+  .s3 .blob{position:absolute;width:460px;height:460px;border-radius:50%;background:#fee88240;right:-80px;top:-60px}
+  .s3 h2{font-family:var(--display);font-weight:600;font-size:clamp(34px,4.5vw,56px);line-height:1.05;letter-spacing:-.02em}
+  .s3 h2 em{font-style:italic;color:#fff0ea}
+  .s3 p{color:#fff0ea;font-size:17px;max-width:46ch;margin:22px 0 30px;line-height:1.55}
+  .btn.white{background:#fff;color:var(--coral-ink)}
+  .foot{padding:26px 7vw;font-size:12.5px;color:var(--muted);display:flex;gap:8px;align-items:center}
+</style></head>
+<body>
+  <nav class="nav rise d1">
+    <div class="logo"><span class="sq" style="--c:var(--coral)">π</span>Princeton Intelligence</div>
+    <div class="links"><a>How it works</a><a>Apps</a><a>For TigerApps</a></div>
+    <span class="spacer"></span><a>Sign in</a><button class="btn">Get started</button>
+  </nav>
+
+  <header class="sec hero">
+    <div class="blob1"></div><div class="blob2"></div><div class="blob3"></div>
+    <div class="row">
+      <div class="rise d2">
+        <span class="eyebrow2"><span class="dot" style="background:var(--coral)"></span>Princeton's campus AI</span>
+        <h1 class="big">Your whole campus,<br><em>one conversation.</em></h1>
+        <p class="lede">Chat with every TigerApp — PrincetonCourses, TigerJunction, TigerPath, TigerSnatch &amp; The Forum — together, in plain English.</p>
+        <div class="cta"><button class="btn">Continue with NetID →</button><button class="btn btn--ghost">See a demo</button></div>
+        <div class="trust">Sign in with your princeton.edu NetID · built by TigerApps</div>
+      </div>
+      <div class="mock rise d3">
+        <div class="bar"><span class="sq" style="--c:var(--coral)">π</span>Ask PI · Everything</div>
+        <div class="body">
+          <div class="ub">Build me a balanced spring schedule</div>
+          <div class="status">✓ Courses ✓ Junction ✓ TigerPath ✓ Snatch</div>
+          <div class="mrow i-pc"><span class="b"></span><div><b>COS 226</b><small>★ 4.3 · QCR · 12 seats</small></div><button class="add">Add</button></div>
+          <div class="mrow i-tj"><span class="b"></span><div><b>ECO 100</b><small>★ 4.1 · MWF 9 · 5 seats</small></div><button class="add">Add</button></div>
+          <div class="mrow i-tp"><span class="b"></span><div><b>MAT 202</b><small>★ 4.2 · QCR · watching</small></div><button class="add" style="background:var(--mag)">Watch</button></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="sec s2">
+    <div class="blobA"></div>
+    <div style="position:relative;z-index:2">
+      <div class="eyebrow">For students</div>
+      <h1 class="big" style="font-size:clamp(32px,4vw,48px);margin-top:10px">Chat with one app —<br><em style="color:var(--turq)">or all of them at once.</em></h1>
+      <p class="lede" style="max-width:48ch;color:var(--ink-2)">Pick a lens to focus, or let PI route across everything.</p>
+    </div>
+    <div class="lenses">
+      <div class="lcard i-pc"><div class="hd"><span class="sq">PC</span><div><b>PrincetonCourses</b><small>courses &amp; evaluations</small></div></div><div class="ex">"Best-rated COS electives?"</div></div>
+      <div class="lcard i-tj"><div class="hd"><span class="sq">TJ</span><div><b>TigerJunction</b><small>build your schedule</small></div></div><div class="ex">"Add COS 226 to my schedule"</div></div>
+      <div class="lcard i-tp"><div class="hd"><span class="sq">TP</span><div><b>TigerPath</b><small>4-year plan &amp; requirements</small></div></div><div class="ex">"What do I still need?"</div></div>
+      <div class="lcard i-ts"><div class="hd"><span class="sq">TS</span><div><b>TigerSnatch</b><small>a seat when one opens</small></div></div><div class="ex">"Ping me when ECO 100 opens"</div></div>
+      <div class="lcard i-tf"><div class="hd"><span class="sq">TF</span><div><b>The Forum</b><small>events · listservs · free food</small></div></div><div class="ex">"Any free food right now?"</div></div>
+      <div class="lcard i-tm"><div class="hd"><span class="sq">TM</span><div><b>TigerMenus</b><small>dining hall menus</small></div></div><div class="ex">"What's for dinner tonight?"</div></div>
+    </div>
+  </section>
+
+  <section class="sec s3">
+    <div class="blob"></div>
+    <div style="position:relative;z-index:2">
+      <h2>From "what should I take?"<br>to <em>done</em> — in one chat.</h2>
+      <p>PI reads your degree plan on TigerPath, checks ratings &amp; conflicts, finds open seats via TigerSnatch, and writes it to TigerJunction — then links you out to each app to go deeper.</p>
+      <button class="btn white">Continue with NetID →</button>
+    </div>
+  </section>
+  <footer class="foot"><span class="sq" style="--c:var(--coral);width:24px;height:24px;font-size:12px;border-radius:30%">π</span> Princeton Intelligence · a TigerApps project</footer>
+</body></html>
