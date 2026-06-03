@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PI - NetID Permissions</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+<div class="frame">
+  <nav class="rail">
+    <a class="brand" href="index.html">PI</a>
+    <a class="lens i-pi" href="home.html"><span class="sq">PI</span><span>Home</span></a>
+    <a class="lens i-tj" href="chat.html"><span class="sq">TJ</span><span>Chat</span></a>
+    <a class="lens i-pc" href="course-workflow.html"><span class="sq">PC</span><span>Courses</span></a>
+    <a class="lens i-tf" href="campus-workflow.html"><span class="sq">TF</span><span>Forum</span></a>
+    <a class="lens i-td" href="draw-workflow.html"><span class="sq">TD</span><span>Draw</span></a>
+    <a class="lens i-pi active" href="permissions.html"><span class="sq">ID</span><span>NetID</span></a>
+    <span class="netid">IA</span>
+  </nav>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="wordmark">Princeton Intelligence</div>
+      <span class="pill soft i-pi"><span class="dot"></span> NetID permissions</span>
+      <span class="spacer"></span>
+      <a class="btn ghost" href="connectors.html">Connector registry</a>
+      <a class="btn" href="chat.html">Ask PI</a>
+    </header>
+
+    <section class="title-row rise d1">
+      <div>
+        <span class="eyebrow">Trust surface</span>
+        <h1>Students should always know what PI can change.</h1>
+      </div>
+      <p>NetID gives PI a strong identity boundary, but product trust comes from explicit scopes, source cards, action previews, and an audit log that students can inspect.</p>
+    </section>
+
+    <section class="grid two rise d2">
+      <div class="panel pad accent i-pi">
+        <div class="panel-head">
+          <span class="sq i-pi">ID</span>
+          <div class="copy"><div>Signed in as ibraheem</div><div>Verified Princeton NetID and email.</div></div>
+          <span class="pill soft i-pi">Active</span>
+        </div>
+        <div class="permission-row i-pc">
+          <div><b>PrincetonCourses</b><small class="subtle">Read course catalog and evaluation metadata.</small></div>
+          <div class="cap-list"><span>search</span><span>details</span><span>evaluations</span></div>
+          <span class="switch i-pc"></span>
+        </div>
+        <div class="permission-row i-tj">
+          <div><b>TigerJunction</b><small class="subtle">Read schedules and propose schedule edits.</small></div>
+          <div class="cap-list"><span>read schedules</span><span>add class</span><span>remove class</span></div>
+          <span class="switch i-tj"></span>
+        </div>
+        <div class="permission-row i-ts">
+          <div><b>TigerSnatch</b><small class="subtle">Read and manage seat-watch subscriptions.</small></div>
+          <div class="cap-list"><span>watch</span><span>unwatch</span><span>demand</span></div>
+          <span class="switch i-ts"></span>
+        </div>
+        <div class="permission-row i-tf">
+          <div><b>The Forum + listservs</b><small class="subtle">Read events and confirm saves or RSVPs.</small></div>
+          <div class="cap-list"><span>search events</span><span>save</span><span>RSVP</span></div>
+          <span class="switch i-tf"></span>
+        </div>
+        <div class="permission-row i-td">
+          <div><b>TigerDraw</b><small class="subtle">Upcoming connector. Prep only until MCP is available.</small></div>
+          <div class="cap-list"><span>preferences</span><span>shortlist</span><span>deadlines</span></div>
+          <span class="pill soft i-td">Soon</span>
+        </div>
+      </div>
+
+      <div class="panel pad accent i-pi">
+        <div class="panel-head">
+          <span class="sq i-pi">PI</span>
+          <div class="copy"><div>Action rules</div><div>What the chat assistant is allowed to do.</div></div>
+        </div>
+        <div class="row i-pi"><span class="sq i-pi">1</span><div class="grow"><b>Read actions can run in chat</b><small>Search, summarize, compare, and explain with source cards.</small></div><span class="pill outline">Default</span></div>
+        <div class="row i-pi"><span class="sq i-pi">2</span><div class="grow"><b>Writes require a visible preview</b><small>Schedule edits, seat watches, event saves, RSVPs, and future draw writes.</small></div><span class="pill soft i-pi">Confirm</span></div>
+        <div class="row i-pi"><span class="sq i-pi">3</span><div class="grow"><b>Sensitive writes get extra friction</b><small>Housing choices and destructive changes need a stronger confirmation pattern.</small></div><span class="pill soft i-td">High trust</span></div>
+        <div class="row i-pi"><span class="sq i-pi">4</span><div class="grow"><b>Every answer has source affordances</b><small>Students can open the originating TigerApp or inspect the source email/card.</small></div><span class="pill outline">Grounded</span></div>
+      </div>
+    </section>
+
+    <section class="section-title">
+      <h2>Recent Audit Log</h2>
+      <span class="pill outline">Student-visible history</span>
+    </section>
+    <div class="panel pad">
+      <div class="audit i-tj"><div class="time">9:42 AM</div><div><b>Added ORF 245 draft to TigerJunction</b><small class="subtle">Confirmed in chat: Fall plan and campus week.</small></div><a class="btn soft i-tj">View</a></div>
+      <div class="audit i-ts"><div class="time">9:43 AM</div><div><b>Created TigerSnatch watch for COS 324</b><small class="subtle">Confirmed in the same action bundle.</small></div><a class="btn soft i-ts">View</a></div>
+      <div class="audit i-tf"><div class="time">9:44 AM</div><div><b>Saved Entrepreneurship dinner in The Forum</b><small class="subtle">Source: e-club listserv email, confidence 94%.</small></div><a class="btn soft i-tf">View</a></div>
+      <div class="audit i-pi"><div class="time">9:45 AM</div><div><b>No TigerDraw write made</b><small class="subtle">Connector not active. PI stored preferences locally as prep context.</small></div><span class="pill outline">Prep</span></div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

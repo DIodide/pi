@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PI - Forum and Listservs</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+<div class="frame">
+  <nav class="rail">
+    <a class="brand" href="index.html">PI</a>
+    <a class="lens i-pi" href="home.html"><span class="sq">PI</span><span>Home</span></a>
+    <a class="lens i-tj" href="chat.html"><span class="sq">TJ</span><span>Chat</span></a>
+    <a class="lens i-pc" href="course-workflow.html"><span class="sq">PC</span><span>Courses</span></a>
+    <a class="lens i-tf active" href="campus-workflow.html"><span class="sq">TF</span><span>Forum</span></a>
+    <a class="lens i-td" href="draw-workflow.html"><span class="sq">TD</span><span>Draw</span></a>
+    <span class="netid">IA</span>
+  </nav>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="wordmark">Princeton Intelligence</div>
+      <span class="pill soft i-tf"><span class="dot"></span> Forum + listserv pipeline</span>
+      <span class="spacer"></span>
+      <a class="btn ghost" href="connectors.html">The Forum MCP</a>
+      <a class="btn" href="chat.html">Ask in chat</a>
+    </header>
+
+    <section class="title-row rise d1">
+      <div>
+        <span class="eyebrow">Campus context</span>
+        <h1>PI turns listserv noise into actions.</h1>
+      </div>
+      <p>The Forum can become PI's campus-life memory: event search, RSVP/save, org follows, and a listserv email pipeline that converts messy emails into source-linked cards.</p>
+    </section>
+
+    <section class="grid two rise d2">
+      <div class="panel pad accent i-tf">
+        <div class="panel-head">
+          <span class="sq i-tf">TF</span>
+          <div class="copy"><div>Listserv digest</div><div>Emails become candidates, not automatic truth.</div></div>
+          <span class="pill soft i-tf">MCP soon</span>
+        </div>
+        <div class="mail-card i-tf">
+          <span class="sq i-tf">TF</span>
+          <div><div class="source">e-club listserv</div><b>Entrepreneurship dinner</b><small class="subtle">Thu 6:30 PM, Friend Center, food mentioned, RSVP requested.</small></div>
+          <span class="confidence i-tf">94%</span>
+        </div>
+        <div class="mail-card i-tf">
+          <span class="sq i-tf">TF</span>
+          <div><div class="source">hci-princeton</div><b>Design systems reading group</b><small class="subtle">Fri 4:30 PM, CS building. Relevant to your saved interests.</small></div>
+          <span class="confidence i-tf">91%</span>
+        </div>
+        <div class="mail-card i-tf">
+          <span class="sq i-tf">TF</span>
+          <div><div class="source">res college email</div><b>Mathey study break</b><small class="subtle">Tonight 9:00 PM. PI marks low priority because it conflicts with a saved event.</small></div>
+          <span class="confidence i-tf">78%</span>
+        </div>
+      </div>
+
+      <div class="panel pad accent i-pi">
+        <div class="panel-head">
+          <span class="sq i-pi">PI</span>
+          <div class="copy"><div>Action separation</div><div>Read, recommend, confirm, then write.</div></div>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item i-tf"><div class="time">Read</div><div><b>Ingest event candidates</b><small class="subtle">Use email headers, sender, body, and Forum org metadata.</small></div><span class="pill outline">No risk</span></div>
+          <div class="timeline-item i-pi"><div class="time">Rank</div><div><b>Match to student interests</b><small class="subtle">Compare to saved orgs, friends, major, free time, and prior saves.</small></div><span class="pill outline">Private</span></div>
+          <div class="timeline-item i-tf"><div class="time">Write</div><div><b>Save or RSVP</b><small class="subtle">PI requires explicit confirmation before writing to The Forum.</small></div><span class="pill soft i-tf">Confirm</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-title">
+      <h2>Chat Card Example</h2>
+      <span class="pill outline">Useful when the student asks "what did I miss?"</span>
+    </section>
+    <div class="render">
+      <div class="render-head i-tf">
+        <span class="sq i-tf">TF</span>
+        <div><div class="name">Events PI thinks you should see</div><div class="sub">Forum events plus listserv-derived candidates, ordered by relevance and schedule fit.</div></div>
+      </div>
+      <div class="timeline" style="padding:0 16px">
+        <div class="timeline-item i-tf"><div class="time">Thu 6:30</div><div><b>Entrepreneurship dinner</b><small class="subtle">Friend Center. Food, RSVP link, two friends saved similar events.</small></div><a class="btn soft i-tf">Save</a></div>
+        <div class="timeline-item i-tf"><div class="time">Fri 4:30</div><div><b>Design systems reading group</b><small class="subtle">No class conflict. Relevant to TigerApps and product/design interests.</small></div><a class="btn soft i-tf">RSVP</a></div>
+        <div class="timeline-item i-pi"><div class="time">Tonight</div><div><b>Mathey study break</b><small class="subtle">Lower priority because it conflicts with a saved E-Club meeting.</small></div><a class="btn ghost">Ignore</a></div>
+      </div>
+      <div class="render-foot"><span class="note">Each generated event can include a source email preview for trust.</span><a class="linkout i-tf">Open The Forum</a></div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

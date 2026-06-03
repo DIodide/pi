@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PI - Course Workflow</title>
+<link rel="stylesheet" href="styles.css">
+<link rel="icon" href="data:,">
+</head>
+<body>
+<div class="frame">
+  <nav class="rail">
+    <a class="brand" href="index.html">PI</a>
+    <a class="lens i-pi" href="home.html"><span class="sq">PI</span><span>Home</span></a>
+    <a class="lens i-tj" href="chat.html"><span class="sq">TJ</span><span>Chat</span></a>
+    <a class="lens i-pc active" href="course-workflow.html"><span class="sq">PC</span><span>Courses</span></a>
+    <a class="lens i-tf" href="campus-workflow.html"><span class="sq">TF</span><span>Forum</span></a>
+    <a class="lens i-td" href="draw-workflow.html"><span class="sq">TD</span><span>Draw</span></a>
+    <span class="netid">IA</span>
+  </nav>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="wordmark">Princeton Intelligence</div>
+      <span class="pill soft i-pc"><span class="dot"></span> Academic workflow</span>
+      <span class="spacer"></span>
+      <a class="btn ghost" href="connectors.html">Connector details</a>
+      <a class="btn" href="chat.html">Ask in chat</a>
+    </header>
+
+    <section class="title-row rise d1">
+      <div>
+        <span class="eyebrow">Courses + path + schedule + seats</span>
+        <h1>One ask becomes a registration plan.</h1>
+      </div>
+      <p>The value is not another course search. PI can pull from PrincetonCourses, check degree requirements in TigerPath, fit the result in TigerJunction, then subscribe to TigerSnatch when a class is full.</p>
+    </section>
+
+    <section class="workflow-steps rise d2">
+      <div class="step i-pc"><div class="num">1</div><h3>Find options</h3><p>Search by distribution, department, time, instructor, and evaluation patterns.</p></div>
+      <div class="step i-tp"><div class="num">2</div><h3>Check requirements</h3><p>Explain which courses satisfy a major, certificate, or distribution need.</p></div>
+      <div class="step i-tj"><div class="num">3</div><h3>Fit schedule</h3><p>Create a draft TigerJunction schedule and verify conflicts before writing.</p></div>
+      <div class="step i-ts"><div class="num">4</div><h3>Watch seats</h3><p>If the best fit is closed, create a TigerSnatch subscription after confirmation.</p></div>
+    </section>
+
+    <section class="section-title">
+      <h2>Rendered Result</h2>
+      <span class="pill outline">A chat response can embed this entire plan</span>
+    </section>
+    <div class="grid two">
+      <div class="render">
+        <div class="render-head i-pc">
+          <span class="sq i-pc">PC</span>
+          <div><div class="name">Best academic fits</div><div class="sub">Sorted by requirement fit, timing, and reviews.</div></div>
+        </div>
+        <div class="course-row i-pc">
+          <div class="code">ORF 245</div>
+          <div><b>Fundamentals of Statistics</b><div class="meta">Completes QCR, MWF morning, high fit for upcoming COS track.</div></div>
+          <span class="tag i-tp">Req</span><span class="metric i-tj">Open</span>
+        </div>
+        <div class="course-row i-ts">
+          <div class="code">COS 324</div>
+          <div><b>Introduction to Machine Learning</b><div class="meta">Strong reviews, ideal track fit, currently full.</div></div>
+          <span class="tag i-pc">High</span><span class="metric i-ts">Watch</span>
+        </div>
+        <div class="course-row i-pc">
+          <div class="code">SML 201</div>
+          <div><b>Introduction to Data Science</b><div class="meta">Good backup. No conflict, lighter prerequisite load.</div></div>
+          <span class="tag i-pc">Backup</span><span class="metric i-tj">Open</span>
+        </div>
+        <div class="render-foot"><span class="note">Sources: PrincetonCourses, TigerPath, TigerJunction, TigerSnatch</span><a class="linkout i-pc">Open details</a></div>
+      </div>
+
+      <div class="panel pad accent i-tp">
+        <div class="panel-head">
+          <span class="sq i-tp">TP</span>
+          <div class="copy"><div>Requirement explanation</div><div>The answer says why each class matters.</div></div>
+        </div>
+        <div class="timeline">
+          <div class="timeline-item i-tp"><div class="time">QCR</div><div><b>ORF 245 closes the requirement</b><small class="subtle">Lowest schedule risk; good professor signals from PC evaluations.</small></div><span class="pill soft i-tp">Best</span></div>
+          <div class="timeline-item i-pc"><div class="time">COS</div><div><b>COS 324 helps the track</b><small class="subtle">Best learning fit, but should be watched instead of assumed.</small></div><span class="pill soft i-ts">Full</span></div>
+          <div class="timeline-item i-tj"><div class="time">MWF</div><div><b>No conflicts in draft</b><small class="subtle">TigerJunction validates the candidate plan before any schedule write.</small></div><span class="pill soft i-tj">Clear</span></div>
+        </div>
+      </div>
+    </div>
+
+    <section class="section-title">
+      <h2>Schedule Preview</h2>
+      <span class="pill soft i-tj">TigerJunction-style card</span>
+    </section>
+    <div class="render">
+      <div class="render-head i-tj">
+        <span class="sq i-tj">TJ</span>
+        <div><div class="name">Draft Fall 2026 schedule</div><div class="sub">This card is what PI would show before it writes to TigerJunction.</div></div>
+        <span class="pill soft i-tj">Ready to confirm</span>
+      </div>
+      <div class="schedule">
+        <div></div><div class="day">MON</div><div class="day">TUE</div><div class="day">WED</div><div class="day">THU</div><div class="day">FRI</div>
+        <div class="timecol"><span>9</span><span>10</span><span>11</span><span>12</span><span>1</span></div>
+        <div class="calgrid">
+          <div class="calcols"><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="block i-tp" style="left:0%;top:8%;width:19%;height:42px"><b>ORF 245</b><small>QCR</small></div>
+          <div class="block i-pc" style="left:0%;top:34%;width:19%;height:42px"><b>COS 324</b><small>watch</small></div>
+          <div class="block i-tp" style="left:40%;top:8%;width:19%;height:42px"><b>ORF 245</b><small>QCR</small></div>
+          <div class="block i-pc" style="left:40%;top:34%;width:19%;height:42px"><b>COS 324</b><small>watch</small></div>
+          <div class="block i-tp" style="left:80%;top:8%;width:19%;height:42px"><b>ORF 245</b><small>QCR</small></div>
+        </div>
+      </div>
+      <div class="render-foot"><span class="note">Write action: add ORF 245 to TigerJunction. Separate write action: subscribe to COS 324 in TigerSnatch.</span><a class="linkout i-tj">Open TigerJunction</a></div>
+    </div>
+  </main>
+</div>
+</body>
+</html>
