@@ -1,0 +1,1009 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PI · Chat</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .app{display:flex;min-height:100vh}
+
+  /* ---- chat history sidebar (manage previous chats) ---- */
+  .history{width:286px;flex:none;border-right:1px solid var(--hair);background:#fffdf9cc;
+    backdrop-filter:blur(6px);display:flex;flex-direction:column;height:100vh;position:sticky;top:0}
+  .history-top{padding:18px 16px 10px}
+  .wordmark{font:600 17px/1 var(--display);letter-spacing:-.01em;display:flex;align-items:center;gap:8px;margin-bottom:14px}
+  .wordmark small{font:600 10px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  .newchat{width:100%;justify-content:center}
+  .search{margin-top:10px;display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:var(--pill);
+    background:#0000000a;color:var(--muted);font-size:13px}
+  .search input{border:0;background:transparent;outline:0;font:inherit;color:var(--ink);width:100%}
+
+  /* sidebar nav — quick links to Dashboard + For you */
+  .sidenav{margin-top:12px;display:flex;flex-direction:column;gap:2px}
+  .sidenav a{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:12px;
+    font:500 13.5px/1 var(--body);color:var(--ink-2);text-decoration:none;
+    transition:.13s background,.13s color}
+  .sidenav a:hover{background:#00000008;color:var(--ink)}
+  .sidenav a svg{width:17px;height:17px;color:var(--muted);flex:none;transition:.13s color}
+  .sidenav a:hover svg{color:var(--coral)}
+  .convs{flex:1;overflow:auto;padding:6px 10px 16px}
+  .grp{font:600 10.5px/1 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);
+    padding:14px 10px 7px;display:flex;align-items:center;gap:6px}
+  .conv{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:12px;cursor:pointer;position:relative;transition:.13s background}
+  .conv:hover{background:#00000007}
+  .conv.active{background:var(--coral-soft)}
+  .conv .dot{box-shadow:0 0 0 3px #fff}
+  .conv .t{flex:1;min-width:0;font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .conv .when{font-size:11px;color:var(--faint);flex:none}
+  .conv .acts{display:none;gap:2px;flex:none}
+  .conv:hover .when{display:none} .conv:hover .acts{display:flex}
+  .iconbtn{width:24px;height:24px;border-radius:8px;border:0;background:transparent;cursor:pointer;color:var(--muted);
+    display:grid;place-items:center;font-size:13px}
+  .iconbtn:hover{background:#0000000f;color:var(--ink)}
+  .iconbtn--svg{width:30px;height:30px}
+  .iconbtn--svg svg{width:16px;height:16px}
+  .history-foot{border-top:1px solid var(--hair);padding:12px 16px;display:flex;align-items:center;gap:10px}
+  .history-foot .me{width:30px;height:30px;border-radius:50%;background:var(--mag);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px}
+
+  /* ---- main chat ---- */
+  .chat{flex:1;display:flex;flex-direction:column;min-width:0;height:100vh}
+  .topbar{display:flex;align-items:center;gap:12px;padding:14px 26px;border-bottom:1px solid var(--hair);background:#faf4eacc;backdrop-filter:blur(6px)}
+  .topbar h2{font-size:17px;font-weight:600}
+  .scope{margin-left:6px;display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:var(--pill);
+    background:var(--coral-soft);color:var(--coral-ink);font:600 12.5px/1 var(--body);cursor:pointer}
+  .scope .dot{background:var(--coral)}
+  .topbar .sp{flex:1}
+  .thread{flex:1;overflow:auto;padding:30px 0 18px}
+  .wrap{max-width:760px;margin:0 auto;padding:0 28px}
+
+  .turn{margin-bottom:30px}
+  .bubble{max-width:78%;margin-left:auto;background:var(--coral);color:#fff;padding:13px 18px;border-radius:20px 20px 6px 20px;
+    box-shadow:var(--sh-sm);font-size:14.5px;line-height:1.5}
+  .agent-head{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+  .agent-head .sq{width:28px;height:28px;font-size:14px}
+  .agent-head b{font-size:13.5px;color:var(--ink-2);font-weight:600}
+  .agent-head .mono{font-size:11px;color:var(--faint);margin-left:2px}
+  .toolrow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:0 0 14px 38px;font-size:12.5px;color:var(--muted)}
+  .toolchip{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:var(--pill);background:#fff;
+    box-shadow:var(--sh-sm);font-weight:600;font-size:11.5px}
+  .say{margin:0 0 16px 38px;font-size:15px;line-height:1.6;color:var(--ink)}
+  .say .serif-it{color:var(--coral-ink)}
+  .stack{margin-left:38px;display:flex;flex-direction:column;gap:14px}
+
+  /* ---- generic render shell (a "card from another app") ---- */
+  .render{border-radius:var(--r);overflow:hidden;box-shadow:var(--sh);background:#fff;border:1px solid var(--hair)}
+  .render-tag{font:500 10.5px/1 var(--mono);color:var(--faint);margin:0 0 7px 38px;display:flex;align-items:center;gap:7px}
+  .render-tag .fx{background:#efe7d8;color:#8a7c66;padding:3px 7px;border-radius:6px;font-weight:600}
+  .render-head{display:flex;align-items:center;gap:10px;padding:13px 16px}
+  .render-head .name{font-weight:700;font-size:13.5px}
+  .render-head .sub{font-size:11.5px;color:var(--muted)}
+  .render-foot{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-top:1px solid #00000010}
+  .render-foot .note{font-size:11.5px;color:var(--muted)}
+
+  /* TigerJunction-styled schedule render (matches the target site: blue accent, Lato, ReCal grid) */
+  .render--tj{font-family:var(--font-tj,'Lato',sans-serif);--tj:#6485fd;--tjink:#2b3a67}
+  .render--tj .render-head{background:linear-gradient(180deg,#eef2ff,#fff);border-bottom:1px solid #e6ebff}
+  .render--tj .render-head .name{color:var(--tjink)}
+  .render--tj .tjlogo{width:26px;height:26px;border-radius:8px;background:var(--tj);color:#fff;display:grid;place-items:center;font-weight:900;font-size:12px}
+  .cal{position:relative;display:grid;grid-template-columns:30px repeat(5,1fr);height:280px;margin:6px 10px 4px}
+  .cal .day{grid-row:1;text-align:center;font:700 10px/1 'Lato';color:#8893b5;padding:6px 0}
+  .cal .gutter{grid-column:1;font:600 9px/1 'Lato';color:#b9c0d6}
+  .cal .grid{grid-column:2/7;grid-row:2;position:relative;border-left:1px solid #eef0f7}
+  .cal .lines{position:absolute;inset:0;background:repeating-linear-gradient(#f1f3f9 0 1px,transparent 1px 40px)}
+  .cal .cols{position:absolute;inset:0;display:grid;grid-template-columns:repeat(5,1fr)}
+  .cal .cols i{border-right:1px solid #f1f3f9}
+  .blk{position:absolute;border-radius:7px;padding:5px 7px;font-family:'Lato';overflow:hidden;border-left:3px solid}
+  .blk b{font-size:10.5px;font-weight:900;display:block} .blk small{font-size:8.5px;opacity:.8}
+  .render--tj .render-foot{border-top:1px solid #e6ebff;background:#fbfcff}
+  .lo-tj{color:#fff;background:var(--tj)} .lo-tj:hover{background:#4d6ff0}
+
+  /* PrincetonCourses-styled course list render (clean academic, blue) */
+  .render--pc{--pc:#0a6cb0}
+  .render--pc .render-head{background:#f4f9fd;border-bottom:1px solid #e3eef7}
+  .render--pc .pclogo{width:26px;height:26px;border-radius:7px;background:var(--pc);color:#fff;display:grid;place-items:center;font-weight:800;font-size:11px}
+  .crow{display:flex;align-items:center;gap:13px;padding:12px 16px;border-bottom:1px solid #f0eee9}
+  .crow:last-child{border-bottom:0}
+  .crow .code{font:800 14px/1 var(--body);color:var(--ink);width:74px;flex:none}
+  .crow .info{flex:1;min-width:0} .crow .info .ti{font-weight:600;font-size:13px}
+  .crow .info .mt{font-size:11px;color:var(--muted);margin-top:2px}
+  .rate{display:inline-flex;align-items:center;gap:4px;font-weight:700;font-size:12.5px;color:#c8862a}
+  .tag{font:600 10px/1 var(--body);padding:4px 8px;border-radius:var(--pill);background:var(--ceru-soft);color:#0a6cb0}
+  .seat{font:600 11px/1 var(--body);color:var(--green)} .seat.full{color:var(--mag)}
+  .lo-pc{color:#fff;background:var(--pc)} .lo-pc:hover{filter:brightness(1.08)}
+
+  /* TigerSnatch-styled seat-watch render (orange, urgent, friendly) */
+  .render--ts{--ts:#ee5a24}
+  .render--ts{display:flex;align-items:center;gap:13px;padding:14px 16px;border-left:4px solid var(--ts);background:linear-gradient(90deg,#fff5f0,#fff)}
+  .render--ts .bell{width:38px;height:38px;border-radius:50%;background:#ffe2d4;color:var(--ts);display:grid;place-items:center;font-size:17px;flex:none}
+  .render--ts .tx{flex:1} .render--ts .tx b{font-size:14px} .render--ts .tx div{font-size:12px;color:var(--muted)}
+  .lo-ts{color:#fff;background:var(--ts)} .lo-ts:hover{filter:brightness(1.06)}
+
+  /* evaluations render (PrincetonCourses) */
+  .quotes{padding:6px 16px 14px} .q{display:flex;gap:10px;padding:9px 0;border-bottom:1px dashed #efeae0;font-size:12.5px;color:var(--ink-2)}
+  .q:last-child{border-bottom:0} .q .qi{color:var(--ceru);font-family:var(--display);font-size:20px;line-height:.7;flex:none}
+
+  .suggest{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 0 38px}
+  .schip{padding:8px 13px;border-radius:var(--pill);background:#fff;border:1px solid var(--hair);box-shadow:var(--sh-sm);
+    font:600 12.5px/1 var(--body);color:var(--ink-2);cursor:pointer;transition:.14s}
+  .schip:hover{border-color:var(--coral);color:var(--coral-ink);transform:translateY(-1px)}
+
+  /* composer */
+  .composer-wrap{padding:14px 0 22px;background:linear-gradient(#faf4ea00,#faf4ea 36%)}
+  .composer{max-width:760px;margin:0 auto;padding:0 28px}
+  .cbar{display:flex;align-items:center;gap:10px;background:var(--paper);border:1.5px solid var(--hair);border-radius:var(--r-lg);
+    padding:8px 8px 8px 14px;box-shadow:var(--sh)}
+  .cbar:focus-within{border-color:var(--coral);box-shadow:0 0 0 4px var(--coral-soft),var(--sh)}
+  .cscope{display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:var(--pill);background:var(--coral-soft);
+    color:var(--coral-ink);font:600 12px/1 var(--body);cursor:pointer;flex:none}
+  .cbar input{flex:1;border:0;outline:0;background:transparent;font:400 14.5px/1.4 var(--body);color:var(--ink)}
+  .send{width:40px;height:40px;border-radius:50%;background:var(--coral);color:#fff;border:0;cursor:pointer;display:grid;place-items:center;
+    font-size:17px;flex:none;box-shadow:var(--sh-sm);transition:.15s}
+  .send:hover{transform:translateY(-1px) scale(1.03)}
+  .chint{text-align:center;font-size:11px;color:var(--faint);margin-top:9px}
+  .chint b{color:var(--muted)}
+
+  /* ---- new-chat picker (replaces the workflows page) ---- */
+  .nc{padding:36px 0 60px}
+  .nc-hello h2{font-family:var(--display);font-size:34px;font-weight:500;letter-spacing:-.015em;line-height:1.1}
+  .nc-hello h2 .serif-it{color:var(--coral-ink)}
+  .nc-hello p{color:var(--ink-2);margin-top:10px;font-size:15px;max-width:540px}
+  .nc-section{margin-top:30px}
+  .nc-section-title{font:700 11px/1 var(--body);letter-spacing:.13em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:14px;padding-left:2px}
+
+  /* app-group cards (Course Planning / Campus Life / Stay on Track) */
+  .nc-groups{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  @media(max-width:900px){.nc-groups{grid-template-columns:1fr}}
+  .nc-group{position:relative;text-align:left;background:var(--paper);border:1px solid var(--hair);
+    border-radius:var(--r);box-shadow:var(--sh-sm);padding:18px 18px 16px;cursor:pointer;
+    transition:.18s transform,.18s box-shadow;overflow:hidden}
+  .nc-group:hover{transform:translateY(-2px);box-shadow:var(--sh)}
+  .nc-group::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--c,var(--coral))}
+  .nc-group .nc-apps{display:flex;gap:-4px;margin-bottom:10px}
+  .nc-group .nc-app{width:30px;height:30px;border-radius:30%;color:#fff;display:grid;place-items:center;
+    font:800 11px/1 var(--body);box-shadow:0 0 0 2px var(--paper);margin-right:-6px}
+  .nc-group .nc-name{font:600 17px/1.15 var(--display);letter-spacing:-.01em}
+  .nc-group .nc-desc{font-size:13px;color:var(--muted);margin-top:4px}
+  .nc-group .nc-cta{margin-top:14px;display:inline-flex;align-items:center;gap:6px;font:600 12.5px/1 var(--body);
+    color:var(--c,var(--coral))}
+
+  /* prompt cards */
+  .nc-prompts{display:flex;flex-direction:column;gap:12px;max-width:640px}
+  .nc-prompt{text-align:left;background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);
+    box-shadow:var(--sh-sm);padding:16px 16px 14px;cursor:pointer;transition:.18s transform,.18s box-shadow,.18s border-color}
+  .nc-prompt:hover{transform:translateY(-2px);box-shadow:var(--sh);border-color:var(--coral)}
+  .nc-prompt .nc-cat{font:700 10px/1 var(--body);letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .nc-prompt .nc-text{font:500 14.5px/1.4 var(--body);color:var(--ink);margin-bottom:10px}
+  .nc-prompt .nc-tags{display:flex;flex-wrap:wrap;gap:10px}
+  .nc-prompt .nc-tag{display:inline-flex;align-items:center;gap:5px;font:600 11px/1 var(--body);color:var(--c,var(--muted))}
+  .nc-prompt .nc-tag::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--c,var(--muted))}
+
+  /* ---- per-turn action row (copy / 👍 / 👎 / undo) ---- */
+  .turn-actions{display:flex;align-items:center;gap:4px;margin:8px 0 0 38px;opacity:.55;transition:.15s opacity}
+  .turn:hover .turn-actions{opacity:1}
+  .turn-actions .ta-btn{width:28px;height:28px;border-radius:8px;border:0;background:transparent;cursor:pointer;
+    color:var(--muted);display:grid;place-items:center;transition:.13s background,.13s color}
+  .turn-actions .ta-btn:hover:not(:disabled){background:#00000010;color:var(--ink)}
+  .turn-actions .ta-btn:disabled{opacity:.35;cursor:not-allowed}
+  .turn-actions .ta-btn svg{width:15px;height:15px}
+  .turn-actions .undo-btn:not(:disabled){color:var(--coral-ink)}
+  .turn-actions .ta-sep{width:1px;height:16px;background:var(--hair);margin:0 4px}
+
+  /* ---- action receipt (what PI just did, with prominent UNDO) ---- */
+  .receipt{margin:6px 0 0 38px;background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);
+    box-shadow:var(--sh-sm);padding:14px 16px;display:flex;align-items:center;gap:14px;
+    border-left:3px solid var(--coral);transition:.25s opacity,.25s border-color}
+  .receipt .check{width:30px;height:30px;border-radius:50%;background:var(--coral-soft);color:var(--coral-ink);
+    display:grid;place-items:center;font-weight:800;flex:none}
+  .receipt .rbody{flex:1;min-width:0}
+  .receipt .rtitle{font-weight:600;font-size:13.5px;line-height:1.3}
+  .receipt .rmeta{font-size:12px;color:var(--muted);margin-top:2px}
+  .receipt .rmeta b{color:var(--ink-2);font-weight:600}
+  .receipt .rundo{display:inline-flex;align-items:center;gap:6px;font:600 12.5px/1 var(--body);
+    padding:8px 14px;border-radius:var(--pill);background:#fff;border:1.5px solid var(--coral);color:var(--coral-ink);
+    cursor:pointer;transition:.15s background,.15s color}
+  .receipt .rundo:hover{background:var(--coral);color:#fff}
+  .receipt.undone{border-left-color:var(--muted);opacity:.72}
+  .receipt.undone .check{background:#0000000a;color:var(--muted)}
+  .receipt.undone .rtitle{text-decoration:line-through;color:var(--muted)}
+  .receipt.undone .rundo{border-color:var(--hair);color:var(--ink-2)}
+  .receipt.undone .rundo:hover{background:var(--ink-2);color:#fff;border-color:var(--ink-2)}
+
+  /* ---- permission-elevation card (PI needs an app that's off) ---- */
+  .perm{margin:6px 0 0 38px;background:var(--paper);border:1px solid var(--hair);border-radius:var(--r);
+    box-shadow:var(--sh-sm);padding:14px 16px;display:flex;align-items:center;gap:14px;
+    border-left:3px solid var(--c,var(--coral));transition:.25s opacity,.25s border-color,.25s padding}
+  .perm .lock{width:32px;height:32px;border-radius:30%;background:var(--c,var(--coral));color:#fff;
+    display:grid;place-items:center;flex:none}
+  .perm .lock svg{width:14px;height:14px}
+  .perm .pbody{flex:1;min-width:0}
+  .perm .ptitle{font-weight:600;font-size:13.5px;line-height:1.35}
+  .perm .ptitle b{font-weight:700}
+  .perm .pmeta{font-size:12px;color:var(--muted);margin-top:3px}
+  .perm .pactions{display:flex;gap:8px;flex:none}
+  .perm .btn-skip,.perm .btn-allow{font:600 12.5px/1 var(--body);padding:9px 14px;border-radius:var(--pill);
+    cursor:pointer;transition:.15s background,.15s color,.15s border-color}
+  .perm .btn-skip{background:transparent;border:1.5px solid var(--hair);color:var(--ink-2)}
+  .perm .btn-skip:hover{border-color:var(--ink-2);background:#fff8}
+  .perm .btn-allow{background:var(--c,var(--coral));color:#fff;border:1.5px solid var(--c,var(--coral))}
+  .perm .btn-allow:hover{filter:brightness(.94)}
+  .perm.granted{padding:9px 14px}
+  .perm.granted .lock{width:22px;height:22px}
+  .perm.granted .lock svg{width:11px;height:11px}
+  .perm.granted .ptitle{font-size:12.5px}
+  .perm.granted .pmeta,.perm.granted .pactions{display:none}
+  .perm.skipped{border-left-color:var(--muted);opacity:.72}
+  .perm.skipped .lock{background:#0000000a;color:var(--muted)}
+  .perm.skipped .ptitle{color:var(--muted)}
+  .perm.skipped .pactions{display:none}
+  .partial{margin:14px 0 0 38px;padding:14px 16px;border-radius:var(--r);background:#fff7eb;
+    border:1px dashed var(--hair);font-size:14px;line-height:1.55;color:var(--ink-2)}
+  .partial b{color:var(--ink);font-weight:600}
+  .partial .manual{margin-top:10px;padding-top:10px;border-top:1px dashed #00000018;font-size:13px}
+  .reoffer{margin:10px 0 0 38px;display:inline-flex;align-items:center;gap:10px;padding:8px 8px 8px 14px;
+    border-radius:var(--pill);background:var(--paper);border:1px solid var(--hair);box-shadow:var(--sh-sm);
+    font-size:13px;color:var(--ink-2)}
+  .reoffer .small-allow{display:inline-flex;align-items:center;gap:6px;font:600 12px/1 var(--body);
+    padding:7px 12px;border-radius:var(--pill);background:var(--c,var(--coral));color:#fff;border:0;cursor:pointer;
+    transition:.15s filter}
+  .reoffer .small-allow:hover{filter:brightness(.94)}
+
+  /* ---- history sidebar footer (now stacks: gear button on top, profile below) ---- */
+  .history-foot{flex-direction:column;align-items:stretch;gap:8px;padding:10px 12px 14px}
+  .hf-settings{display:flex;align-items:center;gap:10px;width:100%;
+    padding:10px 12px;border-radius:12px;border:1px solid transparent;background:transparent;
+    cursor:pointer;color:var(--ink-2);font:600 13px/1 var(--body);text-align:left;
+    transition:.13s background,.13s color,.13s border-color}
+  .hf-settings:hover{background:#00000007;color:var(--ink)}
+  .hf-settings svg{width:17px;height:17px;flex:none}
+  .hf-settings.active{background:var(--coral-soft);color:var(--coral-ink);border-color:#0000000a}
+  .hf-profile{display:flex;align-items:center;gap:10px;padding:4px 4px 0}
+
+  /* ---- roll-up connections panel (anchored next to the left rail gear) ---- */
+  .rollup{position:fixed;left:96px;bottom:14px;z-index:50;
+    width:328px;max-width:calc(100vw - 24px);background:var(--paper);border:1px solid var(--hair);
+    border-radius:20px;box-shadow:var(--sh-lg);overflow:hidden;transform-origin:bottom left;
+    transform:translateY(12px) scale(.94);opacity:0;visibility:hidden;
+    transition:.22s transform cubic-bezier(.2,.9,.3,1.1),.18s opacity,.22s visibility}
+  .rollup.open{transform:translateY(0) scale(1);opacity:1;visibility:visible}
+  .rollup-head{display:flex;align-items:flex-start;padding:14px 16px 10px;border-bottom:1px solid var(--hair);gap:10px}
+  .rollup-head .rh-text{flex:1}
+  .rollup-head .rh-title{font:600 14px/1.1 var(--display)}
+  .rollup-head .rh-sub{font-size:11.5px;color:var(--muted);margin-top:4px}
+  .rollup-head .rh-info{width:40px;height:40px;border-radius:50%;border:2px solid var(--ink);
+    background:var(--ceru-soft);cursor:pointer;display:grid;place-items:center;font:700 18px/1 var(--display);
+    color:var(--ink);text-decoration:none;flex:none;transition:.15s background,.15s transform,.15s color}
+  .rollup-head .rh-info:hover{background:var(--ceru);color:#fff;transform:scale(1.06)}
+  .applist{padding:6px 8px 12px;max-height:340px;overflow:auto}
+  .applist .arow{display:flex;align-items:center;gap:12px;padding:10px 10px;border-radius:12px;transition:.13s background}
+  .applist .arow:hover{background:#00000006}
+  .applist .arow .sq{width:32px;height:32px;font-size:12px}
+  .applist .a-text{flex:1;min-width:0}
+  .applist .a-name{font-weight:600;font-size:13.5px}
+  .applist .a-desc{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .rollup-foot{padding:10px 16px 14px;border-top:1px solid var(--hair);
+    font-size:11.5px;color:var(--muted);text-align:center}
+
+  /* ---- toast (undo confirmation, permission grant) ---- */
+  .toast{position:fixed;left:50%;bottom:140px;transform:translateX(-50%) translateY(20px);
+    background:var(--ink);color:#fff;font-size:13.5px;font-weight:500;padding:11px 18px;border-radius:var(--pill);
+    box-shadow:var(--sh-lg);opacity:0;visibility:hidden;transition:.22s transform,.22s opacity,.22s visibility;z-index:60}
+  .toast.show{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="rrail" aria-label="Primary navigation">
+    <a href="dashboard.html" title="Dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="proactive.html" title="For you">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      <span>For you</span>
+    </a>
+    <div class="rrail-foot">
+      <button class="rrail-btn" id="cal-btn" aria-label="Calendars" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+          <line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/>
+          <line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <span>Calendars</span>
+      </button>
+      <button class="rrail-btn" id="fab" aria-label="Connections" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <span>Connections</span>
+      </button>
+      <button class="rrail-me" id="me-pop" aria-label="Geraldine W. — account" aria-expanded="false">G</button>
+    </div>
+  </aside>
+
+  <div class="cal-pop" id="cal-pop" role="dialog" aria-label="Calendars">
+    <div class="cal-head">
+      <div class="cal-head-title">Calendars</div>
+      <div class="cal-head-sub">Sync events to and from PI — pick what to share.</div>
+    </div>
+    <div class="cal-body">
+      <div class="cal-section">
+        <div class="cal-sec-title"><span class="lg" style="background:#1a73e8">G</span>Google Calendar</div>
+        <div class="cal-row">
+          <div class="av" style="background:#1a73e8">G</div>
+          <div class="who"><b>geraldine@princeton.edu</b><small>Princeton · default</small></div>
+          <label class="toggle"><input type="checkbox" checked><span class="track"></span><span class="knob"></span></label>
+        </div>
+        <div class="cal-row">
+          <div class="av" style="background:#1a73e8">G</div>
+          <div class="who"><b>g.wong@gmail.com</b><small>Personal</small></div>
+          <label class="toggle"><input type="checkbox" checked><span class="track"></span><span class="knob"></span></label>
+        </div>
+        <button class="cal-add" type="button">+ Add another Google account</button>
+      </div>
+      <div class="cal-section">
+        <div class="cal-sec-title"><span class="lg" style="background:#000"></span>Apple Calendar</div>
+        <button class="cal-add" type="button">+ Connect Apple Calendar (iCloud)</button>
+      </div>
+    </div>
+    <div class="cal-foot">PI never moves events without your OK.</div>
+  </div>
+
+  <div class="rrail-pop" id="me-pop-panel" role="dialog" aria-label="Account">
+    <div class="pp-row">
+      <div class="pp-av">G</div>
+      <div>
+        <div class="pp-name">Geraldine W.</div>
+        <div class="pp-mail">geraldine@princeton.edu</div>
+      </div>
+    </div>
+    <hr>
+    <a class="pp-link" href="#">Account settings</a>
+    <a class="pp-link" href="#">Notifications</a>
+    <a class="pp-link" href="#">Sign out</a>
+  </div>
+
+  <!-- chat history management -->
+  <aside class="history">
+    <div class="history-top">
+      <div class="wordmark">Princeton Intelligence <small>PI</small></div>
+      <button class="btn newchat">＋ New chat</button>
+      <label class="search">🔍<input placeholder="Search your chats"></label>
+    </div>
+    <div class="convs">
+      <div class="grp">📌 Pinned</div>
+      <div class="conv"><span class="dot" style="background:var(--coral)"></span><span class="t">Spring 2026 plan</span><span class="when">Mar 24</span>
+        <span class="acts"><button class="iconbtn" title="Rename">✏️</button><button class="iconbtn" title="More">⋯</button></span></div>
+      <div class="conv"><span class="dot" style="background:var(--purple)"></span><span class="t">Thesis advisor shortlist</span><span class="when">Mar 19</span>
+        <span class="acts"><button class="iconbtn">✏️</button><button class="iconbtn">⋯</button></span></div>
+
+      <div class="grp">Today</div>
+      <div class="conv active"><span class="dot" style="background:var(--coral)"></span><span class="t">Balanced spring schedule</span><span class="when">now</span>
+        <span class="acts"><button class="iconbtn" title="Pin">📌</button><button class="iconbtn">⋯</button></span></div>
+      <div class="conv"><span class="dot" style="background:var(--ceru)"></span><span class="t">COS 226 reviews</span><span class="when">9:14</span>
+        <span class="acts"><button class="iconbtn">📌</button><button class="iconbtn">⋯</button></span></div>
+      <div class="conv"><span class="dot" style="background:var(--amber)"></span><span class="t">Free food tonight?</span><span class="when">8:02</span>
+        <span class="acts"><button class="iconbtn">📌</button><button class="iconbtn">⋯</button></span></div>
+
+      <div class="grp">Yesterday</div>
+      <div class="conv"><span class="dot" style="background:var(--ceru)"></span><span class="t">Compare ORF 309 vs 245</span><span class="when">Mon</span>
+        <span class="acts"><button class="iconbtn">📌</button><button class="iconbtn">⋯</button></span></div>
+      <div class="conv"><span class="dot" style="background:var(--purple)"></span><span class="t">What's left for my degree?</span><span class="when">Mon</span>
+        <span class="acts"><button class="iconbtn">📌</button><button class="iconbtn">⋯</button></span></div>
+
+      <div class="grp">Previous 7 days</div>
+      <div class="conv"><span class="dot" style="background:var(--mag)"></span><span class="t">Watch ECO 100 for me</span><span class="when">Fri</span>
+        <span class="acts"><button class="iconbtn">📌</button><button class="iconbtn">⋯</button></span></div>
+      <div class="conv"><span class="dot" style="background:var(--green)"></span><span class="t">Whitman dinner — vegan?</span><span class="when">Thu</span>
+        <span class="acts"><button class="iconbtn">📌</button><button class="iconbtn">⋯</button></span></div>
+      <div class="conv"><span class="dot" style="background:var(--amber)"></span><span class="t">Dean's date deadlines</span><span class="when">Wed</span>
+        <span class="acts"><button class="iconbtn">📌</button><button class="iconbtn">⋯</button></span></div>
+    </div>
+  </aside>
+
+  <!-- conversation -->
+  <main class="chat">
+    <header class="topbar">
+      <h2 class="display">Balanced spring schedule</h2>
+      <span class="sp"></span>
+      <button class="iconbtn iconbtn--svg" id="export-chat" title="Export this chat (.json)" aria-label="Export this chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+      </button>
+      <button class="iconbtn iconbtn--svg" id="import-chats" title="Import chats (.json)" aria-label="Import chats">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="17 8 12 3 7 8"/>
+          <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+      </button>
+      <input type="file" id="import-chats-input" accept="application/json,.json" multiple hidden>
+      <button class="iconbtn" title="Share">⤴</button>
+      <button class="iconbtn" title="More">⋯</button>
+    </header>
+
+    <div class="thread">
+      <div class="wrap">
+
+        <!-- ============================================================
+             NEW-CHAT PICKER — empty state when "+ New chat" is clicked.
+             Hidden by default; the demo loads with an active conversation.
+             ============================================================ -->
+        <section class="nc" id="newchat-picker" hidden>
+          <div class="nc-hello">
+            <h2><span class="serif-it">Hey Geraldine,</span> what should we work on?</h2>
+            <p>Pick one of these or just type your question.</p>
+          </div>
+
+          <div class="nc-section">
+            <div class="nc-section-title">Try one of these</div>
+            <div class="nc-prompts">
+
+              <button class="nc-prompt" data-prompt="Build a balanced spring schedule and watch the full ones for me.">
+                <div class="nc-cat">Course selection</div>
+                <div class="nc-text">"Build a balanced spring schedule and watch the full ones for me"</div>
+                <div class="nc-tags">
+                  <span class="nc-tag" style="--c:var(--ceru)">Courses</span>
+                  <span class="nc-tag" style="--c:var(--turq)">Junction</span>
+                  <span class="nc-tag" style="--c:var(--purple)">Path</span>
+                  <span class="nc-tag" style="--c:var(--mag)">Snatch</span>
+                </div>
+              </button>
+
+              <button class="nc-prompt" data-prompt="Find me 3 backups that still fit if I don't get into MAT 202.">
+                <div class="nc-cat">Course selection</div>
+                <div class="nc-text">"3 backups that still fit if I don't get into MAT 202"</div>
+                <div class="nc-tags">
+                  <span class="nc-tag" style="--c:var(--ceru)">Courses</span>
+                  <span class="nc-tag" style="--c:var(--turq)">Junction</span>
+                  <span class="nc-tag" style="--c:var(--mag)">Snatch</span>
+                </div>
+              </button>
+
+              <button class="nc-prompt" data-prompt="What should I take to finish my certificate and explore ML?">
+                <div class="nc-cat">Looking ahead</div>
+                <div class="nc-text">"What should I take to finish my certificate and explore ML?"</div>
+                <div class="nc-tags">
+                  <span class="nc-tag" style="--c:var(--purple)">Path</span>
+                  <span class="nc-tag" style="--c:var(--ceru)">Courses</span>
+                  <span class="nc-tag" style="--c:var(--turq)">Junction</span>
+                </div>
+              </button>
+
+              <button class="nc-prompt" data-prompt="Catch me up on campus and what's for lunch today.">
+                <div class="nc-cat">Everyday</div>
+                <div class="nc-text">"Catch me up on campus and what's for lunch today"</div>
+                <div class="nc-tags">
+                  <span class="nc-tag" style="--c:var(--amber)">Forum</span>
+                  <span class="nc-tag" style="--c:var(--green)">Menus</span>
+                </div>
+              </button>
+
+              <button class="nc-prompt" data-prompt="Add the free study break from my listserv to my calendar.">
+                <div class="nc-cat">Everyday</div>
+                <div class="nc-text">"Add the free study break from my listserv to my calendar"</div>
+                <div class="nc-tags">
+                  <span class="nc-tag" style="--c:var(--amber)">Forum</span>
+                </div>
+              </button>
+
+              <button class="nc-prompt" data-prompt="Compare COS 226 and COS 217 side by side, with demand.">
+                <div class="nc-cat">Decide</div>
+                <div class="nc-text">"Compare COS 226 and COS 217 side by side, with demand"</div>
+                <div class="nc-tags">
+                  <span class="nc-tag" style="--c:var(--ceru)">Courses</span>
+                  <span class="nc-tag" style="--c:var(--mag)">Snatch</span>
+                </div>
+              </button>
+
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================================
+             Existing demo conversation (hidden when picker is shown)
+             ============================================================ -->
+
+        <!-- Turn 1: user -->
+        <div class="turn rise d1">
+          <div class="bubble">Build me a balanced spring schedule — finish my QCR, good profs, MWF mornings, and watch anything that's full.</div>
+        </div>
+
+        <!-- Turn 1: assistant -->
+        <div class="turn rise d2">
+          <div class="agent-head"><span class="sq i-pi" style="--c:var(--coral)">π</span><b>PI</b></div>
+          <div class="toolrow">Worked across
+            <span class="toolchip"><span class="dot" style="background:var(--purple)"></span>TigerPath</span>
+            <span class="toolchip"><span class="dot" style="background:var(--ceru)"></span>PrincetonCourses</span>
+            <span class="toolchip"><span class="dot" style="background:var(--turq)"></span>TigerJunction</span>
+            <span class="toolchip"><span class="dot" style="background:var(--mag)"></span>TigerSnatch</span>
+          </div>
+          <p class="say">Here's a schedule that finishes your <b>QCR</b> with well-rated MWF-morning classes — I put it straight onto <span class="serif-it">TigerJunction</span> and I'm watching the one that's full.</p>
+
+          <div class="stack">
+            <!-- TigerJunction-styled schedule render -->
+            <div>
+              <div class="render-tag"><span class="fx">live view</span> replaced <span class="mono">get_schedule()</span> — rendered in TigerJunction's style</div>
+              <div class="render render--tj">
+                <div class="render-head"><div class="tjlogo">TJ</div><div><div class="name">Spring 2026 · Draft</div><div class="sub">4 courses · no conflicts · Fridays free</div></div></div>
+                <div class="cal">
+                  <div class="gutter" style="grid-row:2">9<br><br><br>10<br><br><br>11<br><br><br>12<br><br><br>1</div>
+                  <div class="day" style="grid-column:2">M</div><div class="day" style="grid-column:3">T</div>
+                  <div class="day" style="grid-column:4">W</div><div class="day" style="grid-column:5">Th</div><div class="day" style="grid-column:6">F</div>
+                  <div class="grid">
+                    <div class="lines"></div><div class="cols"><i></i><i></i><i></i><i></i><i></i></div>
+                    <!-- ECO 100 MWF 9 -->
+                    <div class="blk" style="left:0%;width:20%;top:0;height:38px;background:#dff0ff;border-color:#3b82f6;color:#1e3a8a">ECO 100<small>McCosh 50</small></div>
+                    <div class="blk" style="left:40%;width:20%;top:0;height:38px;background:#dff0ff;border-color:#3b82f6;color:#1e3a8a">ECO 100<small>McCosh 50</small></div>
+                    <div class="blk" style="left:80%;width:20%;top:0;height:38px;background:#dff0ff;border-color:#3b82f6;color:#1e3a8a">ECO 100<small>McCosh 50</small></div>
+                    <!-- COS 226 MWF 10 -->
+                    <div class="blk" style="left:0%;width:20%;top:40px;height:38px;background:#e8fbf2;border-color:#10b981;color:#065f46">COS 226<small>Friend 101</small></div>
+                    <div class="blk" style="left:40%;width:20%;top:40px;height:38px;background:#e8fbf2;border-color:#10b981;color:#065f46">COS 226<small>Friend 101</small></div>
+                    <div class="blk" style="left:80%;width:20%;top:40px;height:38px;background:#e8fbf2;border-color:#10b981;color:#065f46">COS 226<small>Friend 101</small></div>
+                    <!-- WWS 301 TTh 11-12:20 -->
+                    <div class="blk" style="left:20%;width:20%;top:80px;height:58px;background:#f1e9ff;border-color:#8b5cf6;color:#5b21b6">WWS 301<small>Robertson</small></div>
+                    <div class="blk" style="left:60%;width:20%;top:80px;height:58px;background:#f1e9ff;border-color:#8b5cf6;color:#5b21b6">WWS 301<small>Robertson</small></div>
+                    <!-- GSS 350 Th 1 -->
+                    <div class="blk" style="left:60%;width:20%;top:160px;height:46px;background:#ffe9f4;border-color:#ec4899;color:#9d174d">GSS 350<small>Aaron 008</small></div>
+                  </div>
+                </div>
+                <div class="render-foot"><span class="note">Editing, exports & conflict checks live in the app</span><a class="linkout lo-tj">Open in TigerJunction</a></div>
+              </div>
+            </div>
+
+            <!-- PrincetonCourses-styled course list render -->
+            <div>
+              <div class="render-tag"><span class="fx">live view</span> replaced <span class="mono">search_courses()</span> + <span class="mono">get_evaluations()</span></div>
+              <div class="render render--pc">
+                <div class="render-head"><div class="pclogo">PU</div><div><div class="name">Why these three</div><div class="sub">ratings & seats · PrincetonCourses</div></div></div>
+                <div class="crow"><div class="code">COS 226</div><div class="info"><div class="ti">Algorithms & Data Structures</div><div class="mt">MWF 10:00 · Dondero · QCR</div></div><span class="rate">★ 4.3</span><span class="tag">QCR ✓ Path</span><span class="seat">12 open</span></div>
+                <div class="crow"><div class="code">ECO 100</div><div class="info"><div class="ti">Intro to Microeconomics</div><div class="mt">MWF 9:00 · Kasparov · SA</div></div><span class="rate">★ 4.1</span><span class="tag">fits Junction</span><span class="seat">5 open</span></div>
+                <div class="crow"><div class="code">MAT 202</div><div class="info"><div class="ti">Linear Algebra</div><div class="mt">MWF 11:00 · Ionescu · QCR</div></div><span class="rate">★ 4.2</span><span class="tag">QCR ✓ Path</span><span class="seat full">full</span></div>
+                <div class="render-foot"><span class="note">Full evaluations, grading & past terms in the app</span><a class="linkout lo-pc">View on PrincetonCourses</a></div>
+              </div>
+            </div>
+
+            <!-- TigerSnatch-styled seat watch render -->
+            <div>
+              <div class="render-tag"><span class="fx">action</span> called <span class="mono">subscribe_to_snatch()</span></div>
+              <div class="render render--ts">
+                <div class="bell">🔔</div>
+                <div class="tx"><b>Watching MAT 202 · P01</b><div>You're #28 in line — I'll email geraldine@princeton.edu the moment a seat opens.</div></div>
+                <a class="linkout lo-ts">Manage on TigerSnatch</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- ACTION RECEIPT — what PI just did, with prominent UNDO -->
+          <div class="receipt" id="receipt-1">
+            <div class="check">✓</div>
+            <div class="rbody">
+              <div class="rtitle">Added <b>3 classes</b> to your spring schedule · Watching <b>MAT 202 P01</b></div>
+              <div class="rmeta">in <b>TigerJunction</b> &amp; <b>TigerSnatch</b> · just now</div>
+            </div>
+            <button class="rundo" id="rundo-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg>
+              Undo
+            </button>
+          </div>
+
+          <!-- per-turn action row: undo ENABLED because this turn changed state -->
+          <div class="turn-actions">
+            <button class="ta-btn" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+            <button class="ta-btn" title="Helpful"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg></button>
+            <button class="ta-btn" title="Not helpful"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zM17 2h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg></button>
+            <span class="ta-sep"></span>
+            <button class="ta-btn undo-btn" id="row-undo-1" title="Undo what PI just did"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg></button>
+          </div>
+
+          <div class="suggest">
+            <button class="schip">Swap MAT 202 for a seminar</button>
+            <button class="schip">What am I still missing for COS?</button>
+            <button class="schip">Add these to my calendar</button>
+          </div>
+        </div>
+
+        <!-- Turn 2: user -->
+        <div class="turn rise d3">
+          <div class="bubble">what did people actually say about COS 226?</div>
+        </div>
+
+        <!-- Turn 2: assistant -->
+        <div class="turn rise d4">
+          <div class="agent-head"><span class="sq i-pi" style="--c:var(--coral)">π</span><b>PI</b><span class="mono">· asked PrincetonCourses</span></div>
+          <p class="say">Strong reviews — students love the <span class="serif-it">psets and Dondero's lectures</span>, but call it time-intensive. Averaged <b>4.3/5</b> across the last 4 terms.</p>
+          <div class="stack">
+            <div class="render render--pc">
+              <div class="render-head"><div class="pclogo">PU</div><div><div class="name">COS 226 · student evaluations</div><div class="sub">★ 4.3 · 312 ratings · recency-weighted</div></div></div>
+              <div class="quotes">
+                <div class="q"><span class="qi">"</span>The assignments are genuinely the best part — hard but you learn an unreal amount.</div>
+                <div class="q"><span class="qi">"</span>Dondero is a phenomenal lecturer. Come to class, it's worth it.</div>
+                <div class="q"><span class="qi">"</span>Budget your time. The deadlines come fast during midterms season.</div>
+              </div>
+              <div class="render-foot"><span class="note">All 312 reviews + per-term ratings in the app</span><a class="linkout lo-pc">Read all reviews on PrincetonCourses</a></div>
+            </div>
+          </div>
+          <!-- per-turn action row: undo DISABLED — this turn didn't change anything -->
+          <div class="turn-actions">
+            <button class="ta-btn" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+            <button class="ta-btn" title="Helpful"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg></button>
+            <button class="ta-btn" title="Not helpful"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zM17 2h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg></button>
+            <span class="ta-sep"></span>
+            <button class="ta-btn undo-btn" disabled title="Nothing to undo — this turn didn't change anything"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg></button>
+          </div>
+
+          <div class="suggest">
+            <button class="schip">Who else teaches it?</button>
+            <button class="schip">Compare with COS 217</button>
+            <button class="schip">Add COS 226 to my plan</button>
+          </div>
+        </div>
+
+        <!-- ============================================================
+             Turn 3: user asks something requiring TigerMenus, which is OFF
+             — demonstrates the permission-elevation flow
+             ============================================================ -->
+        <div class="turn rise d5">
+          <div class="bubble">What's for dinner at Forbes tonight? Any vegan options?</div>
+        </div>
+
+        <div class="turn rise d6" id="perm-turn">
+          <div class="agent-head"><span class="sq i-pi" style="--c:var(--coral)">π</span><b>PI</b></div>
+          <p class="say">I can help — but I'd need to peek at <span class="serif-it">Dining menus</span> for that.</p>
+
+          <!-- permission card, accented in TigerMenus green -->
+          <div class="perm i-tm" id="perm-card">
+            <div class="lock">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            </div>
+            <div class="pbody">
+              <div class="ptitle">Turn on <b>Dining menus</b>?</div>
+              <div class="pmeta">PI needs it to check Forbes' menu tonight. You can flip it off anytime.</div>
+            </div>
+            <div class="pactions">
+              <button class="btn-skip" id="perm-skip">Not now</button>
+              <button class="btn-allow" id="perm-allow">Turn on</button>
+            </div>
+          </div>
+
+          <!-- hidden until "Turn on" — the actual answer -->
+          <div id="perm-granted-block" hidden>
+            <p class="say" style="margin-top:16px">Here's tonight at <b>Forbes</b>:</p>
+            <div class="stack">
+              <div class="render render--pc">
+                <div class="render-head"><div class="pclogo" style="background:var(--green)">TM</div><div><div class="name">Forbes · Dinner tonight</div><div class="sub">5:00 – 8:00 PM · vegan options ✓</div></div></div>
+                <div class="crow"><div class="code">🌱</div><div class="info"><div class="ti">Coconut curry chickpeas</div><div class="mt">over jasmine rice · vegan main</div></div><span class="tag" style="background:var(--green-soft);color:var(--green)">vegan</span></div>
+                <div class="crow"><div class="code">🥗</div><div class="info"><div class="ti">Salad bar + hummus + tabbouleh</div><div class="mt">all stations stocked</div></div><span class="tag" style="background:var(--green-soft);color:var(--green)">vegan</span></div>
+                <div class="crow"><div class="code">🍰</div><div class="info"><div class="ti">Vegan oatmeal cookies</div><div class="mt">dessert bar</div></div><span class="tag" style="background:var(--green-soft);color:var(--green)">vegan</span></div>
+                <div class="render-foot"><span class="note">Live menu · updates throughout service</span><a class="linkout" style="background:var(--green);color:#fff">Open in TigerMenus</a></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- hidden until "Not now" — partial answer + re-offer -->
+          <div id="perm-skipped-block" hidden>
+            <div class="partial">
+              Without <b>Dining menus</b>, I can't see tonight's actual entrees. What I <em>can</em> tell you:
+              Forbes serves dinner <b>5:00 – 8:00 PM</b> and usually has at least one vegan main + the standard salad bar.
+              <div class="manual">👉 To check tonight specifically, open <b>TigerMenus → Forbes → Dinner</b>.</div>
+            </div>
+            <div class="reoffer i-tm">
+              Or — want me to just check it?
+              <button class="small-allow" id="perm-reoffer-allow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Turn on Dining menus
+              </button>
+            </div>
+          </div>
+
+          <!-- per-turn action row -->
+          <div class="turn-actions">
+            <button class="ta-btn" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>
+            <button class="ta-btn" title="Helpful"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg></button>
+            <button class="ta-btn" title="Not helpful"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zM17 2h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/></svg></button>
+            <span class="ta-sep"></span>
+            <button class="ta-btn undo-btn" disabled title="Nothing to undo yet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg></button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- composer -->
+    <div class="composer-wrap">
+      <div class="composer">
+        <div class="cbar">
+          <input placeholder="Ask anything about courses or campus…">
+          <button class="iconbtn" title="Attach">＋</button>
+          <button class="send">↑</button>
+        </div>
+        <div class="chint"><b>PI connects your TigerApps</b> — rich answers here, deep edits in each app. Replies may be imperfect.</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============================================================
+       ROLL-UP CONNECTIONS PANEL — floats up from the sidebar gear
+       ============================================================ -->
+  <div class="rollup" id="rollup" role="dialog" aria-label="App connections">
+    <div class="rollup-head">
+      <div class="rh-text">
+        <div class="rh-title">Connections</div>
+        <div class="rh-sub">What PI can see for you. All on by default.</div>
+      </div>
+      <a class="rh-info" href="apps.html" title="Learn what each app does">i</a>
+    </div>
+    <div class="applist">
+      <div class="arow i-pc"><span class="sq">PC</span>
+        <div class="a-text"><div class="a-name">Courses &amp; evaluations</div><div class="a-desc">ratings, descriptions, reqs</div></div>
+        <label class="toggle"><input type="checkbox" checked><span class="track"></span><span class="knob"></span></label></div>
+      <div class="arow i-tj"><span class="sq">TJ</span>
+        <div class="a-text"><div class="a-name">Class schedule</div><div class="a-desc">build &amp; edit your semester</div></div>
+        <label class="toggle"><input type="checkbox" checked><span class="track"></span><span class="knob"></span></label></div>
+      <div class="arow i-tp"><span class="sq">TP</span>
+        <div class="a-text"><div class="a-name">Degree plan</div><div class="a-desc">track to graduate</div></div>
+        <label class="toggle"><input type="checkbox" checked><span class="track"></span><span class="knob"></span></label></div>
+      <div class="arow i-ts"><span class="sq">TS</span>
+        <div class="a-text"><div class="a-name">Seat alerts</div><div class="a-desc">watch full classes</div></div>
+        <label class="toggle"><input type="checkbox" checked><span class="track"></span><span class="knob"></span></label></div>
+      <div class="arow i-tf"><span class="sq">TF</span>
+        <div class="a-text"><div class="a-name">Campus events &amp; listservs</div><div class="a-desc">The Forum · free food</div></div>
+        <label class="toggle"><input type="checkbox" checked><span class="track"></span><span class="knob"></span></label></div>
+      <div class="arow i-tm" data-app="tm"><span class="sq">TM</span>
+        <div class="a-text"><div class="a-name">Dining menus</div><div class="a-desc">what's for dinner</div></div>
+        <label class="toggle"><input type="checkbox" id="toggle-tm"><span class="track"></span><span class="knob"></span></label></div>
+    </div>
+    <div class="rollup-foot">No tokens, no "MCP" — just toggle what PI can see.</div>
+  </div>
+
+  <div class="toast" id="toast"><span id="toast-msg">Undone</span></div>
+
+</div>
+
+<script>
+  // ---- rail popups: Connections + Calendars + profile ----
+  const rollup     = document.getElementById('rollup');
+  const fab        = document.getElementById('fab');
+  const mePop      = document.getElementById('me-pop');
+  const mePopPanel = document.getElementById('me-pop-panel');
+  const calBtn     = document.getElementById('cal-btn');
+  const calPop     = document.getElementById('cal-pop');
+  function closeRollup() {
+    rollup.classList.remove('open');
+    fab.classList.remove('active');
+    fab.setAttribute('aria-expanded','false');
+  }
+  function closeMePop() {
+    if (!mePopPanel) return;
+    mePopPanel.classList.remove('open');
+    mePop.classList.remove('active');
+    mePop.setAttribute('aria-expanded','false');
+  }
+  function closeCalPop() {
+    if (!calPop) return;
+    calPop.classList.remove('open');
+    calBtn.classList.remove('active');
+    calBtn.setAttribute('aria-expanded','false');
+  }
+  fab.addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeMePop(); closeCalPop();
+    const open = rollup.classList.toggle('open');
+    fab.classList.toggle('active', open);
+    fab.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  if (calBtn && calPop) {
+    calBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeRollup(); closeMePop();
+      const open = calPop.classList.toggle('open');
+      calBtn.classList.toggle('active', open);
+      calBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+  if (mePop && mePopPanel) {
+    mePop.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeRollup(); closeCalPop();
+      const open = mePopPanel.classList.toggle('open');
+      mePop.classList.toggle('active', open);
+      mePop.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+  }
+  document.addEventListener('click', (e) => {
+    if (!rollup.contains(e.target) && !fab.contains(e.target)) closeRollup();
+    if (calPop && !calPop.contains(e.target) && !calBtn.contains(e.target)) closeCalPop();
+    if (mePopPanel && !mePopPanel.contains(e.target) && !mePop.contains(e.target)) closeMePop();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { closeRollup(); closeCalPop(); closeMePop(); }
+  });
+
+  // ---- toast helper ----
+  const toast    = document.getElementById('toast');
+  const toastMsg = document.getElementById('toast-msg');
+  let toastTimer;
+  function flashToast(msg) {
+    toastMsg.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+  }
+
+  // ---- UNDO (receipt + per-turn row both flip the same receipt) ----
+  const receipt = document.getElementById('receipt-1');
+  const rUndo   = receipt.querySelector('.rundo');
+  function setUndone(undone) {
+    receipt.classList.toggle('undone', undone);
+    rUndo.innerHTML = undone
+      ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 15-6.7L21 13"/></svg> Redo'
+      : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-15-6.7L3 13"/></svg> Undo';
+  }
+  function doUndo() { setUndone(true);  flashToast('↶ Undone — both changes reversed'); }
+  function doRedo() { setUndone(false); flashToast('↷ Redone — changes restored'); }
+  rUndo.addEventListener('click', () => receipt.classList.contains('undone') ? doRedo() : doUndo());
+  document.getElementById('row-undo-1').addEventListener('click', doUndo);
+
+  // ---- PERMISSION ELEVATION (Dining menus is OFF) ----
+  const permCard      = document.getElementById('perm-card');
+  const permAllow     = document.getElementById('perm-allow');
+  const permSkip      = document.getElementById('perm-skip');
+  const permReofferOk = document.getElementById('perm-reoffer-allow');
+  const grantedBlock  = document.getElementById('perm-granted-block');
+  const skippedBlock  = document.getElementById('perm-skipped-block');
+  const tmToggle      = document.getElementById('toggle-tm');
+
+  function grant() {
+    permCard.classList.remove('skipped');
+    permCard.classList.add('granted');
+    permCard.querySelector('.ptitle').innerHTML = '✓ <b>Dining menus</b> turned on';
+    skippedBlock.hidden = true;
+    grantedBlock.hidden = false;
+    if (tmToggle) tmToggle.checked = true;     // sync the roll-up
+    flashToast('✓ Dining menus turned on');
+  }
+  function skip() {
+    permCard.classList.add('skipped');
+    permCard.querySelector('.ptitle').textContent = 'Skipped — Dining menus stays off';
+    skippedBlock.hidden = false;
+  }
+  permAllow.addEventListener('click', grant);
+  permSkip.addEventListener('click', skip);
+  permReofferOk.addEventListener('click', grant);
+  // if user manually flips the toggle in the roll-up, sync the chat
+  if (tmToggle) {
+    tmToggle.addEventListener('change', () => {
+      if (tmToggle.checked && !permCard.classList.contains('granted')) grant();
+    });
+  }
+
+  // ---- NEW-CHAT PICKER ----
+  // "+ New chat" button → hide existing turns, show picker, blank the title.
+  // Click a quick-start or sample prompt → hide picker, drop the text in as a
+  // user bubble, focus the composer for the follow-up.
+  const picker      = document.getElementById('newchat-picker');
+  const newChatBtn  = document.querySelector('.newchat');
+  const topbarTitle = document.querySelector('.topbar h2');
+  const threadWrap  = document.querySelector('.thread .wrap');
+  const composer    = document.querySelector('.composer input');
+
+  function showPicker() {
+    picker.hidden = false;
+    threadWrap.querySelectorAll('.turn').forEach(t => t.style.display = 'none');
+    topbarTitle.textContent = 'New chat';
+    picker.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function sendPromptAsUser(text) {
+    picker.hidden = true;
+    const turn = document.createElement('article');
+    turn.className = 'turn rise d1';
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+    bubble.textContent = text;
+    turn.appendChild(bubble);
+    threadWrap.appendChild(turn);
+    // crude title: first 6 words of the prompt
+    const title = text.split(/\s+/).slice(0, 6).join(' ');
+    topbarTitle.textContent = title + (text.split(/\s+/).length > 6 ? '…' : '');
+    turn.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    if (composer) composer.focus();
+  }
+
+  if (newChatBtn) newChatBtn.addEventListener('click', showPicker);
+
+  // arrived from the dashboard ask bar with ?q=… → open picker, pre-fill composer
+  const initialQ = new URLSearchParams(location.search).get('q');
+  if (initialQ && initialQ.trim()) {
+    showPicker();
+    if (composer) {
+      composer.value = initialQ.trim();
+      composer.focus();
+      composer.setSelectionRange(composer.value.length, composer.value.length);
+    }
+  }
+
+  // ---- export current chat ----
+  const exportBtn = document.getElementById('export-chat');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', () => {
+      const title = (topbarTitle.textContent || 'chat').trim();
+      const turns = Array.from(threadWrap.querySelectorAll('.turn'))
+        .filter(t => t.style.display !== 'none')
+        .map(t => {
+          const bubble = t.querySelector('.bubble');
+          const say    = t.querySelector('.say');
+          if (bubble) return { role: 'user',      text: bubble.textContent.trim() };
+          if (say)    return { role: 'assistant', text: say.textContent.trim()    };
+          return null;
+        })
+        .filter(Boolean);
+      const payload = {
+        app: 'Princeton Intelligence',
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        chat: { title, turns },
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url  = URL.createObjectURL(blob);
+      const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'chat';
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `pi-${slug}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      flashToast(`Exported "${title}"`);
+    });
+  }
+
+  // ---- import chats ----
+  const importBtn   = document.getElementById('import-chats');
+  const importInput = document.getElementById('import-chats-input');
+  if (importBtn && importInput) {
+    importBtn.addEventListener('click', () => importInput.click());
+    importInput.addEventListener('change', async () => {
+      const files = Array.from(importInput.files || []);
+      if (!files.length) return;
+      let imported = 0, skipped = 0;
+      for (const file of files) {
+        try {
+          const text = await file.text();
+          const data = JSON.parse(text);
+          const items = Array.isArray(data) ? data
+                      : data.chats        ? data.chats
+                      : data.chat         ? [data.chat]
+                      : [data];
+          imported += items.length;
+        } catch {
+          skipped += 1;
+        }
+      }
+      importInput.value = '';
+      const parts = [];
+      if (imported) parts.push(`Imported ${imported} chat${imported === 1 ? '' : 's'}`);
+      if (skipped)  parts.push(`${skipped} skipped`);
+      flashToast(parts.join(' · ') || 'Nothing to import');
+    });
+  }
+
+  picker.querySelectorAll('[data-prompt]').forEach(card => {
+    card.addEventListener('click', () => sendPromptAsUser(card.dataset.prompt));
+  });
+</script>
+
+<script src="nav.js"></script></body>
+</html>

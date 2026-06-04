@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PI · Apps</title><link rel="stylesheet" href="styles.css">
+<style>
+  .banner{display:flex;align-items:center;gap:16px;background:var(--coral-soft);border-radius:var(--r-lg);padding:18px 22px;margin-bottom:22px}
+  .banner .sq{width:50px;height:50px;font-size:22px}
+  .banner h3{font-family:var(--display);font-size:19px}.banner p{font-size:13px;color:var(--ink-2);margin-top:2px}
+  .appgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media(max-width:1080px){.appgrid{grid-template-columns:repeat(2,1fr)}}
+  .appcard{position:relative;overflow:hidden;padding-top:26px}
+  .appcard .top{position:absolute;left:0;right:0;top:0;height:6px;background:var(--c)}
+  .appcard .hd{display:flex;align-items:center;gap:12px}.appcard .hd .sq{width:46px;height:46px;font-size:17px}
+  .appcard .hd b{font-family:var(--display);font-size:18px;display:block}.appcard .hd small{font-size:12px;color:var(--muted)}
+  .caps{margin:15px 0 4px;display:grid;gap:9px}
+  .caps li{list-style:none;display:flex;align-items:center;gap:9px;font-size:12.5px}
+  .caps li::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c)}
+  /* hidden extra bullets — revealed when card has .expanded */
+  .caps li.cap-more{display:none}
+  .appcard.expanded .caps li.cap-more{display:flex;animation:cap-rise .25s ease both}
+  @keyframes cap-rise{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+  .see-more{margin:10px 0 0;background:transparent;border:0;cursor:pointer;padding:4px 0;
+    font:600 12px/1 var(--body);color:var(--c);display:inline-flex;align-items:center;gap:4px;
+    transition:.13s gap}
+  .see-more:hover{gap:7px}
+  /* corner toggle on every app card */
+  .appcard .corner-toggle{position:absolute;top:18px;right:18px;z-index:2}
+  .soonrow{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+  .soon{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#f6f0e6;border:1px solid var(--hair);border-radius:var(--r)}
+  .soon .sq{width:36px;height:36px;background:#d8cdbb;font-size:13px}.soon b{font-size:13.5px;color:var(--muted)}.soon small{font-size:11px;color:var(--muted);display:block}
+</style></head>
+<body><div class="page">
+  <aside class="rrail" aria-label="Primary navigation">
+    <a href="dashboard.html" title="Dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        <polyline points="9 22 9 12 15 12 15 22"/>
+      </svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="chat.html" title="Chat with PI">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      <span>Chat</span>
+    </a>
+    <a href="proactive.html" title="For you">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      <span>For you</span>
+    </a>
+  </aside>
+  <main class="content">
+    <div class="pagebar rise d1"><div><div class="greet">Your <span class="serif-it">Princeton</span> apps</div>
+      <div class="subtle">Chat with one, a few, or all at once — no setup, no jargon. Just toggle what PI can see.</div></div>
+      <span class="spacer"></span><div class="me-lg">G</div></div>
+
+    <div class="appgrid">
+      <section class="tile appcard i-pc rise d2"><span class="top"></span>
+        <label class="toggle corner-toggle"><input type="checkbox" checked><span class="track"></span><span class="knob"></span></label>
+        <div class="hd"><span class="sq">PC</span><div><b>PrincetonCourses</b><small>courses &amp; evaluations</small></div></div>
+        <ul class="caps">
+          <li>Search &amp; compare courses</li>
+          <li>Read evaluations &amp; ratings</li>
+          <li>Look up instructors &amp; top-rated</li>
+          <li class="cap-more">Filter by distribution requirement</li>
+          <li class="cap-more">See past semester grade distributions</li>
+          <li class="cap-more">Find courses by topic or keyword</li>
+        </ul>
+        <button class="see-more">See more ↓</button>
+        <div class="linkrow"><span class="pill" style="color:var(--green)"><span class="dot" style="background:var(--green)"></span>Connected</span><a class="linkout lo-pc">Open</a></div></section>
+
+      <section class="tile appcard i-tj rise d3"><span class="top"></span>
+        <label class="toggle corner-toggle"><input type="checkbox" checked><span class="track"></span><span class="knob"></span></label>
+        <div class="hd"><span class="sq">TJ</span><div><b>TigerJunction</b><small>build your schedule</small></div></div>
+        <ul class="caps">
+          <li>Build &amp; edit your schedule</li>
+          <li>Check for time conflicts</li>
+          <li>Find courses that fit</li>
+          <li class="cap-more">Export to Google or Apple Calendar</li>
+          <li class="cap-more">Compare multiple schedule drafts</li>
+          <li class="cap-more">Color-code by department or workload</li>
+        </ul>
+        <button class="see-more">See more ↓</button>
+        <div class="linkrow"><span class="pill" style="color:var(--green)"><span class="dot" style="background:var(--green)"></span>Connected</span><a class="linkout lo-tj">Open</a></div></section>
+
+      <section class="tile appcard i-tp rise d3"><span class="top"></span>
+        <label class="toggle corner-toggle"><input type="checkbox" checked><span class="track"></span><span class="knob"></span></label>
+        <div class="hd"><span class="sq">TP</span><div><b>TigerPath</b><small>4-year plan &amp; requirements</small></div></div>
+        <ul class="caps">
+          <li>Track requirements left</li>
+          <li>Your four-year plan</li>
+          <li>When students take a course</li>
+          <li class="cap-more">Add a major, minor, or certificate</li>
+          <li class="cap-more">See prerequisite chains</li>
+          <li class="cap-more">Forecast your graduation timing</li>
+        </ul>
+        <button class="see-more">See more ↓</button>
+        <div class="linkrow"><span class="pill" style="color:var(--green)"><span class="dot" style="background:var(--green)"></span>Connected</span><a class="linkout lo-tp">Open</a></div></section>
+
+      <section class="tile appcard i-ts rise d4"><span class="top"></span>
+        <label class="toggle corner-toggle"><input type="checkbox" checked><span class="track"></span><span class="knob"></span></label>
+        <div class="hd"><span class="sq">TS</span><div><b>TigerSnatch</b><small>a seat when one opens</small></div></div>
+        <ul class="caps">
+          <li>Get a seat when one opens</li>
+          <li>See how competitive a class is</li>
+          <li>Trending hard-to-get courses</li>
+          <li class="cap-more">SMS or email notifications</li>
+          <li class="cap-more">Watch multiple sections at once</li>
+          <li class="cap-more">Set priority on your watchlist</li>
+        </ul>
+        <button class="see-more">See more ↓</button>
+        <div class="linkrow"><span class="pill" style="color:var(--green)"><span class="dot" style="background:var(--green)"></span>Connected</span><a class="linkout lo-ts">Open</a></div></section>
+
+      <section class="tile appcard i-tf rise d4"><span class="top"></span>
+        <label class="toggle corner-toggle"><input type="checkbox" checked><span class="track"></span><span class="knob"></span></label>
+        <div class="hd"><span class="sq">TF</span><div><b>The Forum</b><small>events · listservs · free food</small></div></div>
+        <ul class="caps">
+          <li>What's happening this week</li>
+          <li>Free food right now</li>
+          <li>Summarize your listservs</li>
+          <li class="cap-more">RSVP to events in one click</li>
+          <li class="cap-more">Filter by club, res-college, or topic</li>
+          <li class="cap-more">Get reminders before events start</li>
+        </ul>
+        <button class="see-more">See more ↓</button>
+        <div class="linkrow"><span class="pill" style="color:var(--green)"><span class="dot" style="background:var(--green)"></span>Connected</span><a class="linkout lo-tf">Open</a></div></section>
+
+      <section class="tile appcard i-tm rise d5"><span class="top"></span>
+        <label class="toggle corner-toggle"><input type="checkbox" checked><span class="track"></span><span class="knob"></span></label>
+        <div class="hd"><span class="sq">TM</span><div><b>TigerMenus</b><small>dining hall menus</small></div></div>
+        <ul class="caps">
+          <li>Today's dining hall menus</li>
+          <li>Find dishes &amp; dietary options</li>
+          <li>What's for dinner tonight</li>
+          <li class="cap-more">See nutritional info per dish</li>
+          <li class="cap-more">Compare dining halls side-by-side</li>
+          <li class="cap-more">Preview the whole week's menu</li>
+        </ul>
+        <button class="see-more">See more ↓</button>
+        <div class="linkrow"><span class="pill" style="color:var(--green)"><span class="dot" style="background:var(--green)"></span>Connected</span><a class="linkout lo-tm">Open</a></div></section>
+    </div>
+
+    <div class="soonrow rise d6">
+      <div class="soon"><span class="sq">M</span><div><b>MyPrincetonU</b><small>registrar read/write</small></div><span class="pill hpill" style="color:var(--muted)">Soon</span></div>
+      <div class="soon"><span class="sq">D</span><div><b>TigerDraw</b><small>room draw planning</small></div><span class="pill hpill" style="color:var(--muted)">Soon</span></div>
+      <div class="soon"><span class="sq">+</span><div><b>Add your app</b><small>any TigerApp MCP</small></div><span class="pill hpill" style="color:var(--muted)">SDK</span></div>
+    </div>
+  </main>
+</div>
+<script>
+  // "See more / See less" toggle on each app card
+  document.querySelectorAll('.appcard .see-more').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const card = btn.closest('.appcard');
+      const expanded = card.classList.toggle('expanded');
+      btn.textContent = expanded ? 'See less ↑' : 'See more ↓';
+    });
+  });
+</script>
+<script src="connections.js"></script><script src="nav.js"></script></body></html>

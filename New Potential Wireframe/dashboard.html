@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PI · Dashboard</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .dash{display:grid;grid-template-columns:1.62fr 1fr;gap:18px;align-items:start}
+  @media(max-width:1080px){.dash{grid-template-columns:1fr}}
+  .col{display:grid;gap:18px}
+  .crow2{display:flex;align-items:center;gap:12px;margin-top:12px}
+  .crow2 .tm{font:600 12px/1 var(--mono);color:var(--muted);width:40px;flex:none}
+  .chip-cls{flex:1;display:flex;align-items:center;gap:10px;padding:10px 13px;border-radius:12px;background:var(--cs);position:relative}
+  .chip-cls::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:99px;background:var(--c)}
+  .chip-cls b{font-size:13.5px}.chip-cls .rm{font-size:11px;color:var(--muted)}
+  .arow{display:flex;align-items:center;gap:11px;margin-top:13px}
+  .arow .ic{width:30px;height:30px;border-radius:50%;background:var(--cs);color:var(--c);display:grid;place-items:center;flex:none}
+  .arow b{font-size:13px}.arow div small{font-size:11px;color:var(--muted)}
+  .frow{display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:11px;margin-top:9px;background:var(--cs)}
+  .frow .e{font-size:15px}.frow b{font-size:12.5px}.frow small{font-size:10.5px;color:var(--muted);display:block}
+  .chatrow{display:flex;align-items:center;gap:10px;padding:8px 4px;border-radius:9px}
+  .chatrow:hover{background:#00000005}
+  .chatrow .t{flex:1;font-size:13px;font-weight:500}.chatrow .w{font-size:11px;color:var(--faint)}
+  .reqrow{display:grid;grid-template-columns:120px 1fr;align-items:center;gap:12px;margin-top:11px;font-size:12px}
+  .big{font-family:var(--display);font-size:26px;font-weight:600;color:var(--c)}
+  /* Add-a-TigerApp ghost tile */
+  .addapp{display:flex;align-items:center;gap:14px;padding:18px 20px;
+    border:1.5px dashed var(--hair);background:transparent;box-shadow:none;border-radius:var(--r);
+    text-decoration:none;color:var(--ink-2);
+    transition:.18s border-color,.18s background,.18s color,.18s transform}
+  .addapp:hover{border-color:var(--coral);background:#fff8;color:var(--coral-ink);transform:translateY(-2px)}
+  .addapp .plus{width:42px;height:42px;border-radius:13px;background:var(--coral-soft);color:var(--coral-ink);
+    display:grid;place-items:center;font-weight:700;font-size:22px;flex:none;
+    transition:.18s background,.18s color}
+  .addapp:hover .plus{background:var(--coral);color:#fff}
+  .addapp .meta{flex:1;min-width:0}
+  .addapp .meta b{font-family:var(--display);font-size:16px;font-weight:600;color:var(--ink);display:block}
+  .addapp:hover .meta b{color:var(--coral-ink)}
+  .addapp .meta small{font-size:12px;color:var(--muted);display:block;margin-top:2px}
+  .addapp .arr{margin-left:6px;font-size:18px;font-weight:600;color:var(--muted);
+    transition:.18s transform,.18s color}
+  .addapp:hover .arr{color:var(--coral);transform:translateX(3px)}
+  .addapp .stack{display:flex;align-items:center;gap:-4px;flex:none;margin-right:2px}
+  .addapp .stack .sq{width:24px;height:24px;font-size:9.5px;border:2px solid var(--paper);margin-left:-6px}
+  .addapp .stack .sq:first-child{margin-left:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <aside class="rrail" aria-label="Primary navigation">
+    <a href="chat.html" title="Chat with PI">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      <span>Chat</span>
+    </a>
+    <a href="proactive.html" title="For you">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+      <span>For you</span>
+    </a>
+  </aside>
+  <main class="content">
+    <div class="pagebar rise d1">
+      <div>
+        <div class="greet">Hi Geraldine,</div>
+        <div class="subtle">Tuesday, 31 March · course selection opens in <b>6 days</b></div>
+      </div>
+      <span class="spacer"></span>
+      <button class="iconbtn" style="font-size:18px" title="What PI noticed">🔔</button>
+      <div class="me-lg">G</div>
+    </div>
+
+    <form class="ask rise d2" id="ask-form" action="chat.html" method="get">
+      <span class="sq" style="--c:var(--coral);width:34px;height:34px">π</span>
+      <input class="ph" name="q" id="ask-input" placeholder="Ask PI anything across your campus…" autocomplete="off">
+      <button class="send" type="submit" aria-label="Send">↑</button>
+    </form>
+
+    <div class="dash" style="margin-top:20px">
+      <!-- left column -->
+      <div class="col">
+        <!-- Today / TigerJunction -->
+        <section class="tile i-tj rise d2"><span class="accent"></span>
+          <h3><span class="sq" style="--c:var(--turq);width:26px;height:26px;font-size:11px">TJ</span>Today<span class="pill hpill" style="color:var(--turq)"><span class="dot" style="background:var(--turq)"></span>Tue</span></h3>
+          <div class="via">via TigerJunction</div>
+          <div class="crow2"><span class="tm">9:00</span><div class="chip-cls"><b>ECO 100</b><span class="rm">Microeconomics · McCosh 50</span></div></div>
+          <div class="crow2"><span class="tm">11:00</span><div class="chip-cls i-tp"><b>WWS 301</b><span class="rm">Public Policy · Robertson 016</span></div></div>
+          <div class="crow2"><span class="tm">1:30</span><div class="chip-cls i-pc"><b>COS 226</b><span class="rm">Algorithms · Friend 101</span></div></div>
+          <div class="linkrow"><span class="note">Edit & export in the app</span><a class="linkout lo-tj">Open in TigerJunction</a></div>
+        </section>
+        <!-- Degree / TigerPath -->
+        <section class="tile i-tp rise d3"><span class="accent"></span>
+          <h3><span class="sq" style="--c:var(--purple);width:26px;height:26px;font-size:11px">TP</span>Degree progress<span class="hpill big">76%</span></h3>
+          <div class="via">COS B.S.E. · Class of 2027 · via TigerPath</div>
+          <div class="reqrow"><span>Math &amp; Science</span><div class="bar"><i style="width:100%"></i></div></div>
+          <div class="reqrow"><span>CS Core</span><div class="bar"><i style="width:70%"></i></div></div>
+          <div class="reqrow"><span>Departmentals</span><div class="bar"><i style="width:60%"></i></div></div>
+          <div class="reqrow"><span>General Eds</span><div class="bar"><i style="width:85%"></i></div></div>
+          <div class="linkrow"><span class="note">2 requirements left — PI can suggest courses</span><a class="linkout lo-tp">Open in TigerPath</a></div>
+        </section>
+
+        <!-- Add a TigerApp -->
+        <a class="addapp rise d4" href="apps.html" title="Browse and connect more TigerApps">
+          <span class="plus">+</span>
+          <div class="meta">
+            <b>Add a TigerApp</b>
+            <small>Browse PrincetonCourses, TigerMenus &amp; more</small>
+          </div>
+          <span class="stack" aria-hidden="true">
+            <span class="sq" style="--c:var(--ceru)">PC</span>
+            <span class="sq" style="--c:var(--green)">TM</span>
+            <span class="sq" style="--c:var(--muted)">+</span>
+          </span>
+          <span class="arr">→</span>
+        </a>
+      </div>
+
+      <!-- right column -->
+      <div class="col">
+        <!-- Seat alerts / TigerSnatch -->
+        <section class="tile i-ts rise d3"><span class="accent"></span>
+          <h3><span class="sq" style="--c:var(--mag);width:26px;height:26px;font-size:11px">TS</span>Seat alerts<span class="pill hpill" style="color:var(--mag)">2 active</span></h3>
+          <div class="via">via TigerSnatch</div>
+          <div class="arow"><span class="ic">🔔</span><div><b>MAT 202 · P01</b><div><small>watching · #28 in line</small></div></div></div>
+          <div class="arow"><span class="ic">🔔</span><div><b>COS 217 · L01</b><div><small>watching · #4 in line</small></div></div></div>
+          <div class="linkrow"><span class="note">Manage subscriptions</span><a class="linkout lo-ts">Open in TigerSnatch</a></div>
+        </section>
+        <!-- Campus today / The Forum -->
+        <section class="tile i-tf rise d4"><span class="accent"></span>
+          <h3><span class="sq" style="--c:var(--amber);width:26px;height:26px;font-size:11px">TF</span>Campus today</h3>
+          <div class="via">via The Forum · your listservs · live</div>
+          <div class="frow"><span class="e">🍕</span><div><b>Free pizza — Frist 100</b><small>~40 min left</small></div></div>
+          <div class="frow i-pc"><span class="e">🎤</span><div><b>AI &amp; Society talk</b><small>5pm · Friend Center</small></div></div>
+          <div class="frow i-tp"><span class="e">🎶</span><div><b>Sinfonia concert</b><small>8pm · Richardson</small></div></div>
+          <div class="linkrow"><span class="note">Events &amp; RSVPs</span><a class="linkout lo-tf">Open in The Forum</a></div>
+        </section>
+        <!-- Recent chats / history -->
+        <section class="tile rise d5">
+          <h3>Pick up where you left off</h3>
+          <div class="via" style="font-family:var(--body);color:var(--muted)">your recent conversations</div>
+          <div style="margin-top:10px">
+            <a class="chatrow"><span class="dot" style="background:var(--coral)"></span><span class="t">Balanced spring schedule</span><span class="w">now</span></a>
+            <a class="chatrow"><span class="dot" style="background:var(--ceru)"></span><span class="t">COS 226 reviews</span><span class="w">9:14</span></a>
+            <a class="chatrow"><span class="dot" style="background:var(--amber)"></span><span class="t">Free food tonight?</span><span class="w">8:02</span></a>
+            <a class="chatrow"><span class="dot" style="background:var(--purple)"></span><span class="t">What's left for my degree?</span><span class="w">Mon</span></a>
+          </div>
+          <div class="linkrow"><span class="note">manage, rename, pin & search</span><a class="linkout soft" style="--c:var(--coral-ink);--cs:var(--coral-soft)">See all chats</a></div>
+        </section>
+      </div>
+    </div>
+  </main>
+</div>
+<script src="connections.js"></script><script src="nav.js"></script></body>
+</html>
