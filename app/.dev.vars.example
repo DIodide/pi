@@ -1,0 +1,15 @@
+# Copy to .dev.vars and fill in. `wrangler types` reads this file so these
+# optional secrets show up on Env.
+ANTHROPIC_API_KEY=""
+ENGINE_MCP_TOKEN=""
+# Princeton CAS needs no client secret. Set a long random string to sign
+# sessions and pending login cookies (use a separate value for local dev).
+SESSION_SECRET=""
+# Google Calendar MCP (dev needs its own OAuth client with a
+# http://localhost:5173/oauth/google/callback redirect URI).
+GOOGLE_OAUTH_CLIENT_ID=""
+GOOGLE_OAUTH_CLIENT_SECRET=""
+APP_ORIGIN=""
+
+# Connector token for TigerInbox's MCP (inbox.tigerapps.org/api/mcp); matches TIGERINBOX_MCP_TOKEN there.
+TIGERINBOX_MCP_TOKEN=""

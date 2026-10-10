@@ -1,0 +1,126 @@
+# PI — your Princeton desk
+
+A lightweight Princeton chat agent with a stationery-themed UI (highlighters,
+sticky notes, ink pens · Notion × Apple). One Cloudflare Worker serves both the
+React app and the agent; there are no containers and no servers to warm up.
+
+## Architecture
+
+```
+browser (React + useAgentChat over WebSocket)
+   └─ Cloudflare Worker  (static assets + routeAgentRequest)
+        └─ Pi Durable Object        · one instance per conversation
+             extends @cloudflare/think  (agent loop, streaming, SQLite
+             persistence, resumable streams, MCP tool auto-merge)
+             └─ MCP v2 stateless streamable HTTP
+                  └─ TigerApps junction engine (ENGINE_MCP_BASE)
+                       /junction/mcp  /princetoncourses/mcp  /path/mcp  /snatch/mcp
+```
+
+- **Agent**: `src/server/pi.ts` — a `Think` subclass (from the
+  [cloudflare/computer](https://github.com/cloudflare/computer) family; modeled
+  on the `think` example minus its container backend). Workspace bash is off;
+  chat history lives in each conversation's DO SQLite.
+- **MCP**: each toggle on the *My apps* page maps 1:1 to a scoped engine
+  endpoint. Connections use the MCP v2 client (`@modelcontextprotocol/client`
+  2.x, stateless streamable HTTP). Identity travels as `x-user-netid` headers
+  set per connection; changing netid reconnects everything.
+- **Models**: Claude Opus 5 by default, with Sonnet 5 and a Workers AI
+  fallback ("Campus") in the switcher. Claude models require the
+  `ANTHROPIC_API_KEY` secret; without it every choice falls back to Campus.
+- **Identity**: Princeton CAS sign-in (`src/server/auth.ts`, using
+  `https://authenticate.princeton.edu/cas`). The Worker validates service
+  tickets through `/p3/serviceValidate` over HTTPS and takes the NetID from
+  CAS's authenticated `user`, never from an email alias or browser input.
+  Display name and email use CAS attributes when released, falling back to
+  NetID and `<netid>@princeton.edu`. Every agent Durable Object is named `u-<netid>-…` and
+  the Worker rejects any request whose session doesn't own that prefix, so
+  chats (messages *and* workspace files) are strictly per user. Requires only
+  `SESSION_SECRET`, which signs the seven-day HttpOnly session cookie and a
+  ten-minute pending-login cookie. A random state is included in the CAS
+  service URL and checked against that cookie before ticket validation.
+  The service URL is `<origin>/auth/callback?state=<random-value>`; CAS must
+  allow that callback path and its query parameters for each deployed/dev
+  origin. Logout ends the PI session only, leaving Princeton SSO active.
+  Sessions issued before the CAS migration require a fresh sign-in. Existing
+  chats remain under their NetID; any historical email-alias namespaces are
+  not automatically reassigned.
+- **Planner**: renders a native weekly calendar with TigerJunction's course
+  colors and only explicitly selected sections. Available sections are never
+  treated as selected, even when there is only one option. The engine must
+  return a `selected` boolean per section from ReCal's `metadata.confirms`;
+  older responses show an unavailable-selection state instead of a guessed
+  timetable. Conflicts are recomputed among selected sections only.
+- **Workspaces**: private to the signed-in NetID, persisted in the user's desk
+  Durable Object through `/api/workspaces`. Students can organize chats, save
+  course links, and maintain context notes. Assigned chats receive those notes
+  and references on each turn, not other chats' transcripts. Deleting a
+  workspace preserves its chats. This is not a shared/collaborative workspace
+  or a file-storage feature.
+- **UI**: `src/client/` — chat with inline tool renders, message actions
+  (copy / rewind / fork / retry), a model switcher in the composer, a
+  full-page weekly Planner, an Agenda, and My apps. Design system in
+  `src/client/styles.css`; official TigerApps logos in `public/logos/`.
+
+- **Google Calendar**: connects to Google's hosted Calendar MCP server with
+  read-only scopes via OAuth (`src/server/gcal.ts`). The client is
+  pre-registered in Google Cloud; consent runs once from *My apps* against
+  the user's desk DO, which stores the tokens and shares them with that
+  user's chats. Requires the `GOOGLE_OAUTH_CLIENT_ID` var, the
+  `GOOGLE_OAUTH_CLIENT_SECRET` secret, and an authorized redirect URI of
+  `<origin>/oauth/google/callback` on the OAuth client.
+
+## Develop
+
+```bash
+npm install
+cp .dev.vars.example .dev.vars   # fill in secrets as needed
+npm run dev
+```
+
+`npm run typecheck` needs `worker-configuration.d.ts` — generate it with
+`npx wrangler types` (CI does this automatically).
+
+`npm test` runs TypeScript tests with `tsx`, including auth ticket validation,
+browser state, expired/tampered cookies, session migration, workspace storage
+and context isolation, and native tool-result extraction. `tests/native-cards.html`
+is a local visual fixture for selected/unselected schedules and course cards;
+it is not included in the production entry point.
+Local CAS sign-in requires a callback origin permitted by Princeton CAS;
+use an approved HTTPS development origin if localhost is not permitted.
+
+The Workers AI "Campus" model runs remotely even in dev, so wrangler needs
+Cloudflare credentials (`wrangler login`, or `CLOUDFLARE_API_TOKEN` +
+`CLOUDFLARE_ACCOUNT_ID`). The Claude path only needs `ANTHROPIC_API_KEY` in
+`.dev.vars`.
+
+## Deploy
+
+Pushes to `main` deploy automatically via GitHub Actions
+(`.github/workflows/ci.yml`), which expects `CLOUDFLARE_API_TOKEN` and
+`CLOUDFLARE_ACCOUNT_ID` repository secrets. Manual deploys:
+
+```bash
+npm run deploy
+npx wrangler secret put ANTHROPIC_API_KEY    # enables the Claude models
+npx wrangler secret put SESSION_SECRET       # any long random string
+```
+
+CAS needs no client ID, tenant ID, or client secret. The old Entra and OIT
+directory credentials are no longer read and can be removed from the Worker
+after deployment. Keep the existing `SESSION_SECRET` configured.
+
+Config knobs (in `wrangler.jsonc`): `ENGINE_MCP_BASE` (engine base URL) and
+the optional `ENGINE_MCP_TOKEN` secret if the engine ever requires a bearer
+token.
+
+## Notes
+
+- `turndown` is aliased to a stub in `vite.config.ts` — it top-level-requires
+  a CJS DOM shim that fails Workers validation, and it's only reachable
+  through just-bash's `html-to-markdown`, which PI doesn't use (bash is
+  disabled).
+- Stage-3 decorators (`@callable`) need `esbuild.target: "es2022"` so dev
+  matches the production transform.
+- `useAgentChat` suspends while loading history — keep chat pages under a
+  `<Suspense>` boundary.
